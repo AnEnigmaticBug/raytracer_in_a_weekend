@@ -37,6 +37,19 @@ impl Vec3 {
         let normal_component = self.dot(normal) * normal;
         self - 2.0 * normal_component
     }
+
+    pub fn refract(&self, normal: &Vec3, ni_by_nt: f32) -> Option<Self> {
+        let dir = self.normalized();
+        let cos = dir.dot(&normal);
+        let discriminant = 1.0 - ni_by_nt.powi(2) * (1.0 - cos.powi(2));
+
+        if discriminant > 0.0 {
+            Some(ni_by_nt * (dir - normal * cos) - normal * discriminant.sqrt())
+        } else {
+            // Total internal reflection
+            None
+        }
+    }
 }
 
 impl_op_ex!(- |a: &Vec3| -> Vec3 { -1.0 * a });
