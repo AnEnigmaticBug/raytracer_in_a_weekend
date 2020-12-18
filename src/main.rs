@@ -1,6 +1,7 @@
 use raytracer::{
     camera::Camera,
     geometry::{Geometry, Scene, Sphere},
+    material::{Lambertian, Material},
     primitive::Vec3,
     ray_tracer::{Config, RayTracer},
 };
@@ -36,9 +37,21 @@ fn main() {
 
 fn setup_scene() -> Scene {
     Scene {
-        items: vec![Geometry::Sphere(Sphere {
-            center: Vec3::new(0.0, 0.0, -1.0),
-            radius: 0.5,
-        })],
+        items: vec![
+            Geometry::Sphere(Sphere {
+                center: Vec3::new(0.0, 0.0, -1.0),
+                radius: 0.5,
+                material: Material::Lambertian(Lambertian {
+                    albedo: Vec3::new(0.8, 0.3, 0.3),
+                }),
+            }),
+            Geometry::Sphere(Sphere {
+                center: Vec3::new(0.0, -100.5, -1.0),
+                radius: 100.0,
+                material: Material::Lambertian(Lambertian {
+                    albedo: Vec3::new(0.8, 0.8, 0.0),
+                }),
+            }),
+        ],
     }
 }

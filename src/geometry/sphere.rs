@@ -1,3 +1,4 @@
+use crate::material::Material;
 use crate::primitive::{Ray3, Vec3};
 
 use super::HitInfo;
@@ -5,6 +6,7 @@ use super::HitInfo;
 pub struct Sphere {
     pub center: Vec3,
     pub radius: f32,
+    pub material: Material,
 }
 
 impl Sphere {
@@ -30,6 +32,7 @@ impl Sphere {
                         t,
                         pos: pos,
                         normal: (pos - self.center) / self.radius,
+                        material: &self.material,
                     });
                 }
             }

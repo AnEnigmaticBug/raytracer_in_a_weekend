@@ -1,6 +1,7 @@
 mod scene;
 mod sphere;
 
+use crate::material::Material;
 use crate::primitive::{Ray3, Vec3};
 
 pub use scene::Scene;
@@ -10,10 +11,11 @@ pub enum Geometry {
     Sphere(Sphere),
 }
 
-pub struct HitInfo {
+pub struct HitInfo<'a> {
     pub t: f32,
     pub pos: Vec3,
     pub normal: Vec3,
+    pub material: &'a Material,
 }
 
 impl Geometry {
