@@ -12,6 +12,7 @@ pub struct Config {
     pub sky_color: Vec3,
     pub camera: Camera,
     pub num_samples: u8,
+    pub max_reflections: u8,
 }
 
 impl RayTracer {
@@ -28,15 +29,23 @@ impl RayTracer {
             let v = (j as f32 + rng.gen::<f32>()) / config.canvas_ht as f32;
 
             let ray = config.camera.get_ray(u, v);
-            color = color + self.color(&ray, scene, config);
+            color = color + self.color(&ray, scene, config, 0);
         }
 
         color / config.num_samples as f32
     }
 
-    fn color(&self, ray: &Ray3, scene: &Scene, config: &Config) -> Vec3 {
+    fn color(&self, ray: &Ray3, scene: &Scene, config: &Config, depth: u8) -> Vec3 {
+        if depth >= config.max_reflections {
+            return Vec3::all(0.0);
+        }
+
         if let Some(hit) = scene.hit(ray, 0.0, f32::MAX) {
-            0.5 * hit.normal + Vec3::all(0.5)
+            if let Some(info) = hit.material.interact(ray, &hit) {
+                self.color(&info.ray, scene, config, depth + 1) * info.attenuation
+            } else {
+                Vec3::all(0.0)
+            }
         } else {
             let t = 0.5 * (ray.dir.normalized().y + 1.0);
             (1.0 - t) * Vec3::all(1.0) + t * config.sky_color

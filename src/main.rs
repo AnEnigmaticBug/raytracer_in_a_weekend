@@ -18,6 +18,7 @@ fn main() {
         sky_color: Vec3::new(0.5, 0.7, 1.0),
         camera: Camera::new(Vec3::all(0.0), 90.0, WD as f32 / HT as f32),
         num_samples: 16,
+        max_reflections: 16,
     };
 
     println!("P3\n{} {}\n255", WD, HT);
