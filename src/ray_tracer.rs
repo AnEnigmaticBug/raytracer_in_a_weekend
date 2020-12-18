@@ -1,3 +1,5 @@
+use rand::Rng;
+
 use crate::camera::Camera;
 use crate::geometry::Scene;
 use crate::primitive::{Ray3, Vec3};
@@ -9,6 +11,7 @@ pub struct Config {
     pub canvas_ht: u32,
     pub sky_color: Vec3,
     pub camera: Camera,
+    pub num_samples: u8,
 }
 
 impl RayTracer {
@@ -17,11 +20,18 @@ impl RayTracer {
     }
 
     pub fn color_pixel(&self, scene: &Scene, config: &Config, i: u32, j: u32) -> Vec3 {
-        let u = (i as f32) / config.canvas_wd as f32;
-        let v = (j as f32) / config.canvas_ht as f32;
+        let mut color = Vec3::all(0.0);
+        let mut rng = rand::thread_rng();
 
-        let ray = config.camera.get_ray(u, v);
-        self.color(&ray, scene, config)
+        for _ in 0..config.num_samples {
+            let u = (i as f32 + rng.gen::<f32>()) / config.canvas_wd as f32;
+            let v = (j as f32 + rng.gen::<f32>()) / config.canvas_ht as f32;
+
+            let ray = config.camera.get_ray(u, v);
+            color = color + self.color(&ray, scene, config);
+        }
+
+        color / config.num_samples as f32
     }
 
     fn color(&self, ray: &Ray3, scene: &Scene, config: &Config) -> Vec3 {

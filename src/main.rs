@@ -5,8 +5,8 @@ use raytracer::{
     ray_tracer::{Config, RayTracer},
 };
 
-const WD: u32 = 200;
-const HT: u32 = 100;
+const WD: u32 = 512;
+const HT: u32 = 256;
 
 fn main() {
     let ray_tracer = RayTracer::new();
@@ -16,6 +16,7 @@ fn main() {
         canvas_ht: HT,
         sky_color: Vec3::new(0.5, 0.7, 1.0),
         camera: Camera::new(Vec3::all(0.0), 90.0, WD as f32 / HT as f32),
+        num_samples: 16,
     };
 
     println!("P3\n{} {}\n255", WD, HT);
