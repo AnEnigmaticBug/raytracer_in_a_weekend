@@ -1,6 +1,7 @@
 use std::{fs::File, path::Path};
 
 use rand::{thread_rng, Rng};
+use rayon::prelude::*;
 use raytracer::{
     camera::{Camera, CameraInitOptions},
     geometry::{Geometry, Scene, Sphere},
@@ -114,9 +115,10 @@ fn setup_scene() -> Scene {
 
 fn calc_pixels(ray_tracer: RayTracer, scene: Scene, config: Config) -> Vec<u8> {
     (0..HT)
+        .into_par_iter()
         .rev()
-        .flat_map(|j| (0..WD).map(move |i| (i, j)))
-        .flat_map(|(i, j)| {
+        .flat_map_iter(|j| (0..WD).map(move |i| (i, j)))
+        .flat_map_iter(|(i, j)| {
             let color = ray_tracer.color_pixel(&scene, &config, i, j);
 
             let r = (255.99 * color.x) as u8;
