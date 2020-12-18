@@ -1,5 +1,6 @@
 use std::{fs::File, path::Path};
 
+use indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle};
 use rand::{thread_rng, Rng};
 use rayon::prelude::*;
 use raytracer::{
@@ -114,9 +115,17 @@ fn setup_scene() -> Scene {
 }
 
 fn calc_pixels(ray_tracer: RayTracer, scene: Scene, config: Config) -> Vec<u8> {
+    let bar = ProgressBar::new(HT as u64).with_style(
+        ProgressStyle::default_bar()
+            .template("[{elapsed_precise}] [{bar:40.cyan/blue}] {percent}%")
+            .progress_chars("#>-"),
+    );
+    bar.set_draw_delta(4);
+
     (0..HT)
         .into_par_iter()
         .rev()
+        .progress_with(bar)
         .flat_map_iter(|j| (0..WD).map(move |i| (i, j)))
         .flat_map_iter(|(i, j)| {
             let color = ray_tracer.color_pixel(&scene, &config, i, j);
