@@ -32,7 +32,8 @@ impl RayTracer {
             color = color + self.color(&ray, scene, config, 0);
         }
 
-        color / config.num_samples as f32
+        let color = color / config.num_samples as f32;
+        Vec3::new(color.x.sqrt(), color.y.sqrt(), color.z.sqrt())
     }
 
     fn color(&self, ray: &Ray3, scene: &Scene, config: &Config, depth: u8) -> Vec3 {
@@ -40,7 +41,7 @@ impl RayTracer {
             return Vec3::all(0.0);
         }
 
-        if let Some(hit) = scene.hit(ray, 0.0, f32::MAX) {
+        if let Some(hit) = scene.hit(ray, 0.001, f32::MAX) {
             if let Some(info) = hit.material.interact(ray, &hit) {
                 self.color(&info.ray, scene, config, depth + 1) * info.attenuation
             } else {
