@@ -1,5 +1,5 @@
 use raytracer::{
-    camera::Camera,
+    camera::{Camera, CameraInitOptions},
     geometry::{Geometry, Scene, Sphere},
     material::{Dielectric, Lambertian, Material, Metal},
     primitive::Vec3,
@@ -16,7 +16,13 @@ fn main() {
         canvas_wd: WD,
         canvas_ht: HT,
         sky_color: Vec3::new(0.5, 0.7, 1.0),
-        camera: Camera::new(Vec3::all(0.0), 90.0, WD as f32 / HT as f32),
+        camera: Camera::with_options(CameraInitOptions {
+            pos: Vec3::new(-2.0, 2.0, 1.0),
+            look_at: Vec3::new(0.0, 0.0, -1.0),
+            vup: Vec3::new(0.0, 1.0, 0.0),
+            vt_fov: 30.0,
+            aspect: WD as f32 / HT as f32,
+        }),
         num_samples: 16,
         max_reflections: 16,
     };

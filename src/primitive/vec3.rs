@@ -21,6 +21,14 @@ impl Vec3 {
         pdt.x + pdt.y + pdt.z
     }
 
+    pub fn cross(&self, rhs: &Vec3) -> Self {
+        Vec3::new(
+            self.y * rhs.z - self.z * rhs.y,
+            self.z * rhs.x - self.x * rhs.z,
+            self.x * rhs.y - self.y * rhs.x,
+        )
+    }
+
     pub fn len_squared(&self) -> f32 {
         self.dot(self)
     }

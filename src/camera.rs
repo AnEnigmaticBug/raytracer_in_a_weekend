@@ -9,21 +9,28 @@ pub struct Camera {
     vt: Vec3,
 }
 
+pub struct CameraInitOptions {
+    pub pos: Vec3,
+    pub look_at: Vec3,
+    pub vup: Vec3,
+    pub vt_fov: f32,
+    pub aspect: f32,
+}
+
 impl Camera {
-    pub fn new(pos: Vec3, vt_fov: f32, aspect: f32) -> Self {
-        let theta = vt_fov * PI / 180.0;
+    pub fn with_options(options: CameraInitOptions) -> Self {
+        let theta = options.vt_fov * PI / 180.0;
 
         let half_ht = (theta / 2.0).tan();
-        let half_wd = aspect * half_ht;
+        let half_wd = options.aspect * half_ht;
 
-        let u = Vec3::new(1.0, 0.0, 0.0);
-        let v = Vec3::new(0.0, 1.0, 0.0);
-
-        let z = Vec3::new(0.0, 0.0, 1.0);
+        let w = (options.pos - options.look_at).normalized();
+        let u = options.vup.cross(&w).normalized();
+        let v = w.cross(&u);
 
         Camera {
-            pos,
-            lower_left_corner: pos - half_wd * u - half_ht * v - z,
+            pos: options.pos,
+            lower_left_corner: options.pos - half_wd * u - half_ht * v - w,
             hz: 2.0 * half_wd * u,
             vt: 2.0 * half_ht * v,
         }
