@@ -1,5 +1,6 @@
 use std::{fs::File, path::Path};
 
+use rand::{thread_rng, Rng};
 use raytracer::{
     camera::{Camera, CameraInitOptions},
     geometry::{Geometry, Scene, Sphere},
@@ -19,7 +20,7 @@ fn main() {
         canvas_ht: HT,
         sky_color: Vec3::new(0.5, 0.7, 1.0),
         camera: Camera::with_options(CameraInitOptions {
-            pos: Vec3::new(-2.0, 2.0, 1.0),
+            pos: Vec3::new(9.0, 2.0, 2.0),
             look_at: Vec3::new(0.0, 0.0, -1.0),
             vup: Vec3::new(0.0, 1.0, 0.0),
             vt_fov: 30.0,
@@ -36,37 +37,79 @@ fn main() {
 }
 
 fn setup_scene() -> Scene {
-    Scene {
-        items: vec![
-            Geometry::Sphere(Sphere {
-                center: Vec3::new(0.0, 0.0, -1.0),
-                radius: 0.5,
-                material: Material::Lambertian(Lambertian {
-                    albedo: Vec3::new(0.8, 0.3, 0.3),
-                }),
-            }),
-            Geometry::Sphere(Sphere {
-                center: Vec3::new(0.0, -100.5, -1.0),
-                radius: 100.0,
-                material: Material::Lambertian(Lambertian {
-                    albedo: Vec3::new(0.8, 0.8, 0.0),
-                }),
-            }),
-            Geometry::Sphere(Sphere {
-                center: Vec3::new(-1.0, 0.0, -1.0),
-                radius: 0.5,
-                material: Material::Dielectric(Dielectric { ref_idx: 1.5 }),
-            }),
-            Geometry::Sphere(Sphere {
-                center: Vec3::new(1.0, 0.0, -1.0),
-                radius: 0.5,
-                material: Material::Metal(Metal {
-                    albedo: Vec3::new(0.8, 0.6, 0.2),
-                    fuzz: 1.0,
-                }),
-            }),
-        ],
+    let mut scene = Scene {
+        items: Vec::with_capacity(1 + 12 * 12 + 3),
+    };
+
+    scene.items.push(Geometry::Sphere(Sphere {
+        center: Vec3::new(0.0, -1000.0, 0.0),
+        radius: 1000.0,
+        material: Material::Lambertian(Lambertian {
+            albedo: Vec3::all(0.5),
+        }),
+    }));
+
+    let mut rng = thread_rng();
+
+    for a in -6..6 {
+        for b in -6..6 {
+            let offset = Vec3::new(rng.gen(), 0.0, rng.gen()) * 0.9;
+            let center = Vec3::new(a as f32, 0.2, b as f32) + offset;
+
+            let material_chooser = rng.gen::<f32>();
+            let material = if material_chooser < 0.8 {
+                Material::Lambertian(Lambertian {
+                    albedo: Vec3::new(
+                        rng.gen::<f32>() * rng.gen::<f32>(),
+                        rng.gen::<f32>() * rng.gen::<f32>(),
+                        rng.gen::<f32>() * rng.gen::<f32>(),
+                    ),
+                })
+            } else if material_chooser < 0.95 {
+                Material::Metal(Metal {
+                    albedo: Vec3::new(
+                        0.5 * (rng.gen::<f32>() + 1.0),
+                        0.5 * (rng.gen::<f32>() + 1.0),
+                        0.5 * (rng.gen::<f32>() + 1.0),
+                    ),
+                    fuzz: 0.5 * rng.gen::<f32>(),
+                })
+            } else {
+                Material::Dielectric(Dielectric { ref_idx: 1.5 })
+            };
+
+            scene.items.push(Geometry::Sphere(Sphere {
+                center,
+                radius: 0.2,
+                material,
+            }));
+        }
     }
+
+    scene.items.push(Geometry::Sphere(Sphere {
+        center: Vec3::new(-4.0, 1.0, 0.0),
+        radius: 1.0,
+        material: Material::Lambertian(Lambertian {
+            albedo: Vec3::new(0.4, 0.2, 0.1),
+        }),
+    }));
+
+    scene.items.push(Geometry::Sphere(Sphere {
+        center: Vec3::new(0.0, 1.0, 0.0),
+        radius: 1.0,
+        material: Material::Dielectric(Dielectric { ref_idx: 1.5 }),
+    }));
+
+    scene.items.push(Geometry::Sphere(Sphere {
+        center: Vec3::new(4.0, 1.0, 0.0),
+        radius: 1.0,
+        material: Material::Metal(Metal {
+            albedo: Vec3::new(0.7, 0.6, 0.5),
+            fuzz: 0.0,
+        }),
+    }));
+
+    scene
 }
 
 fn calc_pixels(ray_tracer: RayTracer, scene: Scene, config: Config) -> Vec<u8> {
