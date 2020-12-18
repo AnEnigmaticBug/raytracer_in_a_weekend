@@ -1,3 +1,5 @@
+use std::{fs::File, path::Path};
+
 use raytracer::{
     camera::{Camera, CameraInitOptions},
     geometry::{Geometry, Scene, Sphere},
@@ -27,19 +29,10 @@ fn main() {
         max_reflections: 16,
     };
 
-    println!("P3\n{} {}\n255", WD, HT);
-
-    for j in (0..HT).rev() {
-        for i in 0..WD {
-            let color = ray_tracer.color_pixel(&scene, &config, i, j);
-
-            let r = (255.99 * color.x) as u8;
-            let g = (255.99 * color.y) as u8;
-            let b = (255.99 * color.z) as u8;
-
-            println!("{} {} {}", r, g, b);
-        }
-    }
+    let pixels = calc_pixels(ray_tracer, scene, config);
+    img_writer("scene.png")
+        .write_image_data(&pixels)
+        .expect("Couldn't write image data");
 }
 
 fn setup_scene() -> Scene {
@@ -74,4 +67,29 @@ fn setup_scene() -> Scene {
             }),
         ],
     }
+}
+
+fn calc_pixels(ray_tracer: RayTracer, scene: Scene, config: Config) -> Vec<u8> {
+    (0..HT)
+        .rev()
+        .flat_map(|j| (0..WD).map(move |i| (i, j)))
+        .flat_map(|(i, j)| {
+            let color = ray_tracer.color_pixel(&scene, &config, i, j);
+
+            let r = (255.99 * color.x) as u8;
+            let g = (255.99 * color.y) as u8;
+            let b = (255.99 * color.z) as u8;
+
+            vec![r, g, b]
+        })
+        .collect()
+}
+
+fn img_writer<P: AsRef<Path>>(path: P) -> png::Writer<File> {
+    let file = File::create(path).expect("Couldn't create file");
+
+    let mut encoder = png::Encoder::new(file, WD, HT);
+    encoder.set_color(png::ColorType::RGB);
+    encoder.set_depth(png::BitDepth::Eight);
+    encoder.write_header().unwrap()
 }
