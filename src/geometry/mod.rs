@@ -1,7 +1,9 @@
+mod scene;
 mod sphere;
 
 use crate::primitive::{Ray3, Vec3};
 
+pub use scene::Scene;
 pub use sphere::Sphere;
 
 pub enum Geometry {
