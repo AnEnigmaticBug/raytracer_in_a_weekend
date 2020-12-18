@@ -32,6 +32,11 @@ impl Vec3 {
     pub fn normalized(&self) -> Self {
         self / self.len()
     }
+
+    pub fn reflect(&self, normal: &Vec3) -> Self {
+        let normal_component = self.dot(normal) * normal;
+        self - 2.0 * normal_component
+    }
 }
 
 impl_op_ex!(- |a: &Vec3| -> Vec3 { -1.0 * a });
