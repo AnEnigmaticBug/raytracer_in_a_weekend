@@ -1,13 +1,16 @@
+mod plane;
 mod scene;
 mod sphere;
 
 use crate::material::Material;
 use crate::primitive::{Ray3, Vec3};
 
+pub use plane::Plane;
 pub use scene::Scene;
 pub use sphere::Sphere;
 
 pub enum Geometry {
+    Plane(Plane),
     Sphere(Sphere),
 }
 
@@ -21,6 +24,7 @@ pub struct HitInfo<'a> {
 impl Geometry {
     pub fn hit(&self, ray: &Ray3, tmin: f32, tmax: f32) -> Option<HitInfo> {
         match self {
+            Geometry::Plane(plane) => plane.hit(ray, tmin, tmax),
             Geometry::Sphere(sphere) => sphere.hit(ray, tmin, tmax),
         }
     }
