@@ -1,4 +1,6 @@
+use indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle};
 use rand::Rng;
+use rayon::prelude::*;
 
 use crate::camera::Camera;
 use crate::geometry::Scene;
@@ -34,6 +36,31 @@ impl RayTracer {
 
         let color = color / config.num_samples as f32;
         Vec3::new(color.x.sqrt(), color.y.sqrt(), color.z.sqrt())
+    }
+
+    pub fn color_scene(&self, scene: &Scene, config: &Config) -> Vec<u8> {
+        let bar = ProgressBar::new(config.canvas_ht as u64).with_style(
+            ProgressStyle::default_bar()
+                .template("[{elapsed_precise}] [{bar:40.cyan/blue}] {percent}%")
+                .progress_chars("#>-"),
+        );
+        bar.set_draw_delta(4);
+
+        (0..config.canvas_ht)
+            .into_par_iter()
+            .rev()
+            .progress_with(bar)
+            .flat_map_iter(|j| (0..config.canvas_wd).map(move |i| (i, j)))
+            .flat_map_iter(|(i, j)| {
+                let color = self.color_pixel(&scene, &config, i, j);
+
+                let r = (255.99 * color.x) as u8;
+                let g = (255.99 * color.y) as u8;
+                let b = (255.99 * color.z) as u8;
+
+                vec![r, g, b]
+            })
+            .collect()
     }
 
     fn color(&self, ray: &Ray3, scene: &Scene, config: &Config, depth: u8) -> Vec3 {

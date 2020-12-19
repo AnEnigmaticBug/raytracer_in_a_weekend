@@ -1,8 +1,6 @@
 use std::{fs::File, path::Path};
 
-use indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle};
 use rand::{thread_rng, Rng};
-use rayon::prelude::*;
 use raytracer::{
     camera::{Camera, CameraInitOptions},
     geometry::{Geometry, Scene, Sphere},
@@ -32,7 +30,7 @@ fn main() {
         max_reflections: 16,
     };
 
-    let pixels = calc_pixels(ray_tracer, scene, config);
+    let pixels = ray_tracer.color_scene(&scene, &config);
     img_writer("scene.png")
         .write_image_data(&pixels)
         .expect("Couldn't write image data");
@@ -112,31 +110,6 @@ fn setup_scene() -> Scene {
     }));
 
     scene
-}
-
-fn calc_pixels(ray_tracer: RayTracer, scene: Scene, config: Config) -> Vec<u8> {
-    let bar = ProgressBar::new(HT as u64).with_style(
-        ProgressStyle::default_bar()
-            .template("[{elapsed_precise}] [{bar:40.cyan/blue}] {percent}%")
-            .progress_chars("#>-"),
-    );
-    bar.set_draw_delta(4);
-
-    (0..HT)
-        .into_par_iter()
-        .rev()
-        .progress_with(bar)
-        .flat_map_iter(|j| (0..WD).map(move |i| (i, j)))
-        .flat_map_iter(|(i, j)| {
-            let color = ray_tracer.color_pixel(&scene, &config, i, j);
-
-            let r = (255.99 * color.x) as u8;
-            let g = (255.99 * color.y) as u8;
-            let b = (255.99 * color.z) as u8;
-
-            vec![r, g, b]
-        })
-        .collect()
 }
 
 fn img_writer<P: AsRef<Path>>(path: P) -> png::Writer<File> {
