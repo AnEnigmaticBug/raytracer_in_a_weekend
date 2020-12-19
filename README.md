@@ -2,13 +2,13 @@
 
 `raytracer_in_a_weekend` is my attempt at making a ray-tracer while following along the excellent _Ray Tracing in One Weekend_ guide. It also served as a good mini-project to brush up my Rust skills.
 
-The provided demo (in [main.rs](src/main.rs)) renders a randomly generated scene. The scene consists of a collection of spheres with one of 3 types of materials:
+The provided demo (in [main.rs](src/main.rs)) renders a randomly generated scene. The scene consists of 2 planes + a collection of spheres with one of 3 types of materials:
 
 - Lambertian (matte)
 - Metal
 - Dielectric (glass)
 
-While the raytracer in _Ray Tracing in One Weekend_ is single-threaded, I've used `rayon` for multi-threading.
+While the raytracer in _Ray Tracing in One Weekend_ is single-threaded, I've used `rayon` for multi-threading. I've also added support for planes.
 
 ## Running
 
