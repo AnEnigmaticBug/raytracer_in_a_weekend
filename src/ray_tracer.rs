@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::path::Path;
 
+use clap::Args;
 use indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle};
 use rand::Rng;
 use rayon::prelude::*;
@@ -8,10 +9,23 @@ use rayon::prelude::*;
 use crate::primitive::{Ray3, Vec3};
 use crate::scene::Scene;
 
+#[derive(Args)]
 pub struct RayTracer {
+    /// Width of the rendered image
+    #[clap(long = "wd", default_value_t = 1440)]
     pub canvas_wd: u32,
+
+    /// Height of the rendered image
+    #[clap(long = "ht", default_value_t = 720)]
     pub canvas_ht: u32,
+
+    /// The number of samples taken per pixel. Higher values mean lesser noise.
+    #[clap(short = 's', long = "samples", default_value_t = 48)]
     pub num_samples: u8,
+
+    /// The maximum number of reflections per light ray. Most scenes don't need
+    /// more than 20 reflections.
+    #[clap(short = 'r', long, default_value_t = 16)]
     pub max_reflections: u8,
 }
 

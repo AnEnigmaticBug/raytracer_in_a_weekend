@@ -1,18 +1,26 @@
+use clap::Parser;
 use raytracer::{ray_tracer::RayTracer, scene::Scene};
 
-const WD: u32 = 512;
-const HT: u32 = 256;
+/// Read a scene description from a JSON file and ray trace it.
+#[derive(Parser)]
+#[clap(about)]
+struct CliArgs {
+    #[clap(flatten)]
+    ray_tracer: RayTracer,
+    /// The JSON file which contains the scene description.
+    #[clap(long)]
+    scene: String,
+    /// The desired path of the rendered image.
+    #[clap(long, default_value = "scene.png")]
+    output: String,
+}
 
 fn main() {
-    let ray_tracer = RayTracer {
-        canvas_wd: WD,
-        canvas_ht: HT,
-        num_samples: 16,
-        max_reflections: 16,
-    };
-    let scene = Scene::from_json("inputs/scene.json").expect("Couldn't read scene");
+    let args = CliArgs::parse();
+    let ray_tracer = args.ray_tracer;
+    let scene = Scene::from_json(args.scene).expect("Couldn't read scene");
 
     ray_tracer
-        .render_to_file(&scene, "scene.png")
+        .render_to_file(&scene, args.output)
         .expect("Couldn't write image data");
 }

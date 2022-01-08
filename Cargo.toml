@@ -5,6 +5,7 @@ authors = ["Nishant Mahajan <nishant.mahajanXVII@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+clap = {version = "3.0.5", features = ["derive"]}
 impl_ops = "0.1.1"
 indicatif = {version = "0.15.0", features = ["rayon"]}
 png = "0.16.8"

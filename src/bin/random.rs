@@ -1,3 +1,4 @@
+use clap::Parser;
 use rand::{thread_rng, Rng};
 use raytracer::{
     camera::{Camera, CameraInitOptions},
@@ -8,24 +9,28 @@ use raytracer::{
     scene::Scene,
 };
 
-const WD: u32 = 512;
-const HT: u32 = 256;
+/// Generate a scene made of randomly placed balls and ray trace it.
+#[derive(Parser)]
+#[clap(about)]
+struct CliArgs {
+    #[clap(flatten)]
+    ray_tracer: RayTracer,
+    /// The desired path of the rendered image.
+    #[clap(long, default_value = "scene.png")]
+    output: String,
+}
 
 fn main() {
-    let ray_tracer = RayTracer {
-        canvas_wd: WD,
-        canvas_ht: HT,
-        num_samples: 16,
-        max_reflections: 16,
-    };
-    let scene = setup_scene();
+    let args = CliArgs::parse();
+    let ray_tracer = args.ray_tracer;
+    let scene = setup_scene(ray_tracer.canvas_wd, ray_tracer.canvas_ht);
 
     ray_tracer
-        .render_to_file(&scene, "scene.png")
+        .render_to_file(&scene, args.output)
         .expect("Couldn't write image data");
 }
 
-fn setup_scene() -> Scene {
+fn setup_scene(wd: u32, ht: u32) -> Scene {
     let mut scene = Scene {
         sky_color: Vec3::new(0.5, 0.7, 1.0),
         camera: Camera::with_options(CameraInitOptions {
@@ -33,7 +38,7 @@ fn setup_scene() -> Scene {
             look_at: Vec3::new(0.0, 0.0, -1.0),
             vup: Vec3::new(0.0, 1.0, 0.0),
             vt_fov: 30.0,
-            aspect: WD as f32 / HT as f32,
+            aspect: wd as f32 / ht as f32,
         }),
         items: Vec::with_capacity(1 + 12 * 12 + 3),
     };
