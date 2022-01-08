@@ -3,10 +3,11 @@ use std::{fs::File, path::Path};
 use rand::{thread_rng, Rng};
 use raytracer::{
     camera::{Camera, CameraInitOptions},
-    geometry::{Geometry, Scene, Sphere},
+    geometry::{Geometry, Sphere},
     material::{Dielectric, Lambertian, Material, Metal},
     primitive::Vec3,
     ray_tracer::{Config, RayTracer},
+    scene::Scene,
 };
 
 const WD: u32 = 512;
@@ -18,14 +19,6 @@ fn main() {
     let config = Config {
         canvas_wd: WD,
         canvas_ht: HT,
-        sky_color: Vec3::new(0.5, 0.7, 1.0),
-        camera: Camera::with_options(CameraInitOptions {
-            pos: Vec3::new(9.0, 2.0, 2.0),
-            look_at: Vec3::new(0.0, 0.0, -1.0),
-            vup: Vec3::new(0.0, 1.0, 0.0),
-            vt_fov: 30.0,
-            aspect: WD as f32 / HT as f32,
-        }),
         num_samples: 16,
         max_reflections: 16,
     };
@@ -38,6 +31,14 @@ fn main() {
 
 fn setup_scene() -> Scene {
     let mut scene = Scene {
+        sky_color: Vec3::new(0.5, 0.7, 1.0),
+        camera: Camera::with_options(CameraInitOptions {
+            pos: Vec3::new(9.0, 2.0, 2.0),
+            look_at: Vec3::new(0.0, 0.0, -1.0),
+            vup: Vec3::new(0.0, 1.0, 0.0),
+            vt_fov: 30.0,
+            aspect: WD as f32 / HT as f32,
+        }),
         items: Vec::with_capacity(1 + 12 * 12 + 3),
     };
 

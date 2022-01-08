@@ -2,17 +2,14 @@ use indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle};
 use rand::Rng;
 use rayon::prelude::*;
 
-use crate::camera::Camera;
-use crate::geometry::Scene;
 use crate::primitive::{Ray3, Vec3};
+use crate::scene::Scene;
 
 pub struct RayTracer {}
 
 pub struct Config {
     pub canvas_wd: u32,
     pub canvas_ht: u32,
-    pub sky_color: Vec3,
-    pub camera: Camera,
     pub num_samples: u8,
     pub max_reflections: u8,
 }
@@ -30,7 +27,7 @@ impl RayTracer {
             let u = (i as f32 + rng.gen::<f32>()) / config.canvas_wd as f32;
             let v = (j as f32 + rng.gen::<f32>()) / config.canvas_ht as f32;
 
-            let ray = config.camera.get_ray(u, v);
+            let ray = scene.camera.get_ray(u, v);
             color = color + self.color(&ray, scene, config, 0);
         }
 
@@ -76,7 +73,7 @@ impl RayTracer {
             }
         } else {
             let t = 0.5 * (ray.dir.normalized().y + 1.0);
-            (1.0 - t) * Vec3::all(1.0) + t * config.sky_color
+            (1.0 - t) * Vec3::all(1.0) + t * scene.sky_color
         }
     }
 }

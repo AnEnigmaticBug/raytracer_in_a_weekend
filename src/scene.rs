@@ -1,8 +1,10 @@
-use crate::primitive::Ray3;
-
-use super::{Geometry, HitInfo};
+use crate::camera::Camera;
+use crate::geometry::{Geometry, HitInfo};
+use crate::primitive::{Ray3, Vec3};
 
 pub struct Scene {
+    pub sky_color: Vec3,
+    pub camera: Camera,
     pub items: Vec<Geometry>,
 }
 
