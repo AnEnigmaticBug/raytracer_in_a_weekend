@@ -1,5 +1,3 @@
-use std::{fs::File, path::Path};
-
 use rand::{thread_rng, Rng};
 use raytracer::{
     camera::{Camera, CameraInitOptions},
@@ -23,9 +21,8 @@ fn main() {
         max_reflections: 16,
     };
 
-    let pixels = ray_tracer.color_scene(&scene, &config);
-    img_writer("scene.png")
-        .write_image_data(&pixels)
+    ray_tracer
+        .render_to_file(&scene, &config, "scene.png")
         .expect("Couldn't write image data");
 }
 
@@ -111,13 +108,4 @@ fn setup_scene() -> Scene {
     }));
 
     scene
-}
-
-fn img_writer<P: AsRef<Path>>(path: P) -> png::Writer<File> {
-    let file = File::create(path).expect("Couldn't create file");
-
-    let mut encoder = png::Encoder::new(file, WD, HT);
-    encoder.set_color(png::ColorType::RGB);
-    encoder.set_depth(png::BitDepth::Eight);
-    encoder.write_header().unwrap()
 }

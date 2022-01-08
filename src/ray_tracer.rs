@@ -1,3 +1,6 @@
+use std::fs::File;
+use std::path::Path;
+
 use indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle};
 use rand::Rng;
 use rayon::prelude::*;
@@ -19,20 +22,21 @@ impl RayTracer {
         RayTracer {}
     }
 
-    pub fn color_pixel(&self, scene: &Scene, config: &Config, i: u32, j: u32) -> Vec3 {
-        let mut color = Vec3::all(0.0);
-        let mut rng = rand::thread_rng();
+    pub fn render_to_file<P: AsRef<Path>>(
+        &self,
+        scene: &Scene,
+        config: &Config,
+        path: P,
+    ) -> Result<(), png::EncodingError> {
+        let pixels = self.color_scene(&scene, &config);
 
-        for _ in 0..config.num_samples {
-            let u = (i as f32 + rng.gen::<f32>()) / config.canvas_wd as f32;
-            let v = (j as f32 + rng.gen::<f32>()) / config.canvas_ht as f32;
+        let file = File::create(path).expect("Couldn't create file");
 
-            let ray = scene.camera.get_ray(u, v);
-            color = color + self.color(&ray, scene, config, 0);
-        }
-
-        let color = color / config.num_samples as f32;
-        Vec3::new(color.x.sqrt(), color.y.sqrt(), color.z.sqrt())
+        let mut encoder = png::Encoder::new(file, config.canvas_wd, config.canvas_ht);
+        encoder.set_color(png::ColorType::RGB);
+        encoder.set_depth(png::BitDepth::Eight);
+        let mut writer = encoder.write_header().unwrap();
+        writer.write_image_data(&pixels)
     }
 
     pub fn color_scene(&self, scene: &Scene, config: &Config) -> Vec<u8> {
@@ -60,14 +64,30 @@ impl RayTracer {
             .collect()
     }
 
-    fn color(&self, ray: &Ray3, scene: &Scene, config: &Config, depth: u8) -> Vec3 {
+    fn color_pixel(&self, scene: &Scene, config: &Config, i: u32, j: u32) -> Vec3 {
+        let mut color = Vec3::all(0.0);
+        let mut rng = rand::thread_rng();
+
+        for _ in 0..config.num_samples {
+            let u = (i as f32 + rng.gen::<f32>()) / config.canvas_wd as f32;
+            let v = (j as f32 + rng.gen::<f32>()) / config.canvas_ht as f32;
+
+            let ray = scene.camera.get_ray(u, v);
+            color = color + self.color_ray(&ray, scene, config, 0);
+        }
+
+        let color = color / config.num_samples as f32;
+        Vec3::new(color.x.sqrt(), color.y.sqrt(), color.z.sqrt())
+    }
+
+    fn color_ray(&self, ray: &Ray3, scene: &Scene, config: &Config, depth: u8) -> Vec3 {
         if depth >= config.max_reflections {
             return Vec3::all(0.0);
         }
 
         if let Some(hit) = scene.hit(ray, 0.001, f32::MAX) {
             if let Some(info) = hit.material.interact(ray, &hit) {
-                self.color(&info.ray, scene, config, depth + 1) * info.attenuation
+                self.color_ray(&info.ray, scene, config, depth + 1) * info.attenuation
             } else {
                 Vec3::all(0.0)
             }
