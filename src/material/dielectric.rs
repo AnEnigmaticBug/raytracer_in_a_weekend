@@ -1,10 +1,12 @@
 use rand::random;
+use serde::{Deserialize, Serialize};
 
 use crate::geometry::HitInfo;
 use crate::primitive::{Ray3, Vec3};
 
 use super::RayInfo;
 
+#[derive(Serialize, Deserialize)]
 pub struct Dielectric {
     pub ref_idx: f32,
 }

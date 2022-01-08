@@ -1,9 +1,12 @@
+use serde::{Deserialize, Serialize};
+
 use crate::geometry::HitInfo;
 use crate::primitive::{Ray3, Vec3};
 
 use super::util::rand_pos_in_sphere;
 use super::RayInfo;
 
+#[derive(Serialize, Deserialize)]
 pub struct Lambertian {
     pub albedo: Vec3,
 }

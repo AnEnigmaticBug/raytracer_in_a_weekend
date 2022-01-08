@@ -1,8 +1,11 @@
+use serde::{Deserialize, Serialize};
+
 use crate::geometry::HitInfo;
 use crate::primitive::{Ray3, Vec3};
 
 use super::{util::rand_pos_in_sphere, RayInfo};
 
+#[derive(Serialize, Deserialize)]
 pub struct Metal {
     pub albedo: Vec3,
     pub fuzz: f32,

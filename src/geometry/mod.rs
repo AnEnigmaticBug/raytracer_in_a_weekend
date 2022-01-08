@@ -5,8 +5,10 @@ use crate::material::Material;
 use crate::primitive::{Ray3, Vec3};
 
 pub use plane::Plane;
+use serde::{Deserialize, Serialize};
 pub use sphere::Sphere;
 
+#[derive(Serialize, Deserialize)]
 pub enum Geometry {
     Plane(Plane),
     Sphere(Sphere),

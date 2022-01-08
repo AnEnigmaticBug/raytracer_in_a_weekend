@@ -12,6 +12,11 @@ While the raytracer in _Ray Tracing in One Weekend_ is single-threaded, I've use
 
 ## Running
 
-1. Ensure you've `cargo` setup properly.
-2. Do `cargo run --release --bin random` in the project's root directory.
-3. This will render the scene to `scene.png`. This part is CPU intensive. A progress bar is shown to ensure you're not left waiting blindly.
+1. Ensure you've setup `cargo` properly.
+2. `cd` to the project's root directory.
+3. You have 2 options:
+    - `cargo run --release --bin random` will render a randomized scene full of spheres
+    - `cargo run --release --bin custom` will render a scene as per `inputs/scene.json` (you can edit this file)
+    
+    Rendering is CPU intensive. To speed things up, `rayon` will try to use as many CPU cores as possible. A progress bar will be shown to ensure that you're not left waiting blindly.
+4. The rendered scene will be saved as `scene.png`.

@@ -1,7 +1,10 @@
 use std::f32::consts::PI;
 
+use serde::{Deserialize, Serialize};
+
 use crate::primitive::{Ray3, Vec3};
 
+#[derive(Serialize, Deserialize)]
 pub struct Camera {
     pub pos: Vec3,
     pub lower_left_corner: Vec3,

@@ -1,6 +1,8 @@
 use std::ops;
 
-#[derive(Clone, Copy)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Copy, Serialize, Deserialize)]
 pub struct Vec3 {
     pub x: f32,
     pub y: f32,

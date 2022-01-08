@@ -9,7 +9,9 @@ use crate::primitive::{Ray3, Vec3};
 pub use dielectric::Dielectric;
 pub use lambertian::Lambertian;
 pub use metal::Metal;
+use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize)]
 pub enum Material {
     Dielectric(Dielectric),
     Lambertian(Lambertian),
