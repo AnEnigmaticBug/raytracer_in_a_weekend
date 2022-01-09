@@ -7,6 +7,7 @@ use raytracer::{
     primitive::Vec3,
     ray_tracer::RayTracer,
     scene::Scene,
+    texture::{Solid, Texture},
 };
 
 /// Generate a scene made of randomly placed balls and ray trace it.
@@ -47,7 +48,9 @@ fn setup_scene(wd: u32, ht: u32) -> Scene {
         center: Vec3::new(0.0, -1000.0, 0.0),
         radius: 1000.0,
         material: Material::Lambertian(Lambertian {
-            albedo: Vec3::all(0.5),
+            texture: Texture::Solid(Solid {
+                color: Vec3::all(0.5),
+            }),
         }),
     }));
 
@@ -61,19 +64,23 @@ fn setup_scene(wd: u32, ht: u32) -> Scene {
             let material_chooser = rng.gen::<f32>();
             let material = if material_chooser < 0.8 {
                 Material::Lambertian(Lambertian {
-                    albedo: Vec3::new(
-                        rng.gen::<f32>() * rng.gen::<f32>(),
-                        rng.gen::<f32>() * rng.gen::<f32>(),
-                        rng.gen::<f32>() * rng.gen::<f32>(),
-                    ),
+                    texture: Texture::Solid(Solid {
+                        color: Vec3::new(
+                            rng.gen::<f32>() * rng.gen::<f32>(),
+                            rng.gen::<f32>() * rng.gen::<f32>(),
+                            rng.gen::<f32>() * rng.gen::<f32>(),
+                        ),
+                    }),
                 })
             } else if material_chooser < 0.95 {
                 Material::Metal(Metal {
-                    albedo: Vec3::new(
-                        0.5 * (rng.gen::<f32>() + 1.0),
-                        0.5 * (rng.gen::<f32>() + 1.0),
-                        0.5 * (rng.gen::<f32>() + 1.0),
-                    ),
+                    texture: Texture::Solid(Solid {
+                        color: Vec3::new(
+                            0.5 * (rng.gen::<f32>() + 1.0),
+                            0.5 * (rng.gen::<f32>() + 1.0),
+                            0.5 * (rng.gen::<f32>() + 1.0),
+                        ),
+                    }),
                     fuzz: 0.5 * rng.gen::<f32>(),
                 })
             } else {
@@ -92,7 +99,9 @@ fn setup_scene(wd: u32, ht: u32) -> Scene {
         center: Vec3::new(-4.0, 1.0, 0.0),
         radius: 1.0,
         material: Material::Lambertian(Lambertian {
-            albedo: Vec3::new(0.4, 0.2, 0.1),
+            texture: Texture::Solid(Solid {
+                color: Vec3::new(0.4, 0.2, 0.1),
+            }),
         }),
     }));
 
@@ -106,7 +115,9 @@ fn setup_scene(wd: u32, ht: u32) -> Scene {
         center: Vec3::new(4.0, 1.0, 0.0),
         radius: 1.0,
         material: Material::Metal(Metal {
-            albedo: Vec3::new(0.7, 0.6, 0.5),
+            texture: Texture::Solid(Solid {
+                color: Vec3::new(0.7, 0.6, 0.5),
+            }),
             fuzz: 0.0,
         }),
     }));

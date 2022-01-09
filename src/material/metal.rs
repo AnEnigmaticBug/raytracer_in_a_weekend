@@ -1,13 +1,14 @@
 use serde::{Deserialize, Serialize};
 
 use crate::geometry::HitInfo;
-use crate::primitive::{Ray3, Vec3};
+use crate::primitive::Ray3;
+use crate::texture::Texture;
 
 use super::{util::rand_pos_in_sphere, RayInfo};
 
 #[derive(Serialize, Deserialize)]
 pub struct Metal {
-    pub albedo: Vec3,
+    pub texture: Texture,
     pub fuzz: f32,
 }
 
@@ -19,7 +20,7 @@ impl Metal {
         if scattered_ray.dir.dot(&hit.normal) > 0.0 {
             Some(RayInfo {
                 ray: scattered_ray,
-                attenuation: self.albedo,
+                attenuation: self.texture.color(hit.u, hit.v),
             })
         } else {
             None

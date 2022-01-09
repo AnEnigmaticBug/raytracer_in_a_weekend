@@ -7,3 +7,4 @@ pub mod material;
 pub mod primitive;
 pub mod ray_tracer;
 pub mod scene;
+pub mod texture;

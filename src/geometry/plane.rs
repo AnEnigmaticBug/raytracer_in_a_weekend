@@ -41,11 +41,6 @@ impl Plane {
             return None;
         }
 
-        Some(HitInfo {
-            t,
-            pos,
-            normal,
-            material: &self.material,
-        })
+        todo!("Add UV calculation")
     }
 }

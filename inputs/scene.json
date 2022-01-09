@@ -37,10 +37,14 @@
         "radius": 1000.0,
         "material": {
           "Lambertian": {
-            "albedo": {
-              "x": 0.5,
-              "y": 0.5,
-              "z": 0.5
+            "texture": {
+              "Solid": {
+                "color": {
+                  "x": 0.5,
+                  "y": 0.5,
+                  "z": 0.5
+                }
+              }
             }
           }
         }
@@ -56,10 +60,10 @@
         "radius": 1.0,
         "material": {
           "Lambertian": {
-            "albedo": {
-              "x": 0.4,
-              "y": 0.2,
-              "z": 0.1
+            "texture": {
+              "Image": {
+                "path": "inputs/textures/uv-map-test.png"
+              }
             }
           }
         }
@@ -90,10 +94,14 @@
         "radius": 1.0,
         "material": {
           "Metal": {
-            "albedo": {
-              "x": 0.7,
-              "y": 0.6,
-              "z": 0.5
+            "texture": {
+              "Solid": {
+                "color": {
+                  "x": 0.7,
+                  "y": 0.6,
+                  "z": 0.5
+                }
+              }
             },
             "fuzz": 0.0
           }

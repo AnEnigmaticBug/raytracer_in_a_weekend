@@ -8,7 +8,13 @@ The provided demo (in [random.rs](src/bin/random.rs)) renders a randomly generat
 - Metal
 - Dielectric (glass)
 
-While the raytracer in _Ray Tracing in One Weekend_ is single-threaded, I've used `rayon` for multi-threading. I've also added support for planes.
+## My additions
+
+These things weren't covered in _Ray Tracing in One Weekend_ but I added them anyway ¯\\\_(ツ)\_/¯:
+* Multi-threading (using [`rayon`](https://crates.io/crates/rayon))
+* Planes
+* Textures (images and linear gradients)
+* Scene serialization/deserialization via JSON files
 
 ## Running
 

@@ -1,3 +1,5 @@
+use std::f32::consts::PI;
+
 use serde::{Deserialize, Serialize};
 
 use crate::material::Material;
@@ -31,10 +33,13 @@ impl Sphere {
             {
                 if tmin < t && t < tmax {
                     let pos = ray.point_at_param(t);
+                    let normal = (pos - self.center) / self.radius;
                     return Some(HitInfo {
                         t,
-                        pos: pos,
-                        normal: (pos - self.center) / self.radius,
+                        u: 0.5 - (normal.z / normal.x).atan() / PI,
+                        v: 1.0 - (normal.y + 1.0) / 2.0,
+                        pos,
+                        normal,
                         material: &self.material,
                     });
                 }
