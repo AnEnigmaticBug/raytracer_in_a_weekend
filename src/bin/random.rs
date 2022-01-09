@@ -1,7 +1,7 @@
 use clap::Parser;
 use rand::{thread_rng, Rng};
 use raytracer::{
-    camera::{Camera, CameraInitOptions},
+    camera::CameraInitOptions,
     geometry::{Geometry, Sphere},
     material::{Dielectric, Lambertian, Material, Metal},
     primitive::Vec3,
@@ -34,13 +34,13 @@ fn main() {
 fn setup_scene(wd: u32, ht: u32) -> Scene {
     let mut scene = Scene {
         sky_color: Vec3::new(0.5, 0.7, 1.0),
-        camera: Camera::with_options(CameraInitOptions {
+        camera: CameraInitOptions {
             pos: Vec3::new(9.0, 2.0, 2.0),
             look_at: Vec3::new(0.0, 0.0, -1.0),
             vup: Vec3::new(0.0, 1.0, 0.0),
             vt_fov: 30.0,
             aspect: wd as f32 / ht as f32,
-        }),
+        }.into(),
         items: Vec::with_capacity(1 + 12 * 12 + 3),
     };
 
