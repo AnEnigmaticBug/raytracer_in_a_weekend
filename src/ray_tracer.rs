@@ -99,8 +99,7 @@ impl RayTracer {
                 Vec3::all(0.0)
             }
         } else {
-            let t = 0.5 * (ray.dir.normalized().y + 1.0);
-            (1.0 - t) * Vec3::all(1.0) + t * scene.sky_color
+            scene.sky_box.color(ray.dir)
         }
     }
 }

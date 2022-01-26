@@ -1,8 +1,35 @@
 {
-  "sky_color": {
-    "x": 0.5,
-    "y": 0.7,
-    "z": 1.0
+  "sky_box": {
+    "up": {
+      "Image": {
+        "path": "inputs/textures/yellowcloud_up.png"
+      }
+    },
+    "dn": {
+      "Image": {
+        "path": "inputs/textures/yellowcloud_dn.png"
+      }
+    },
+    "lf": {
+      "Image": {
+        "path": "inputs/textures/yellowcloud_lf.png"
+      }
+    },
+    "rt": {
+      "Image": {
+        "path": "inputs/textures/yellowcloud_rt.png"
+      }
+    },
+    "ft": {
+      "Image": {
+        "path": "inputs/textures/yellowcloud_ft.png"
+      }
+    },
+    "bk": {
+      "Image": {
+        "path": "inputs/textures/yellowcloud_bk.png"
+      }
+    }
   },
   "camera": {
     "pos": {

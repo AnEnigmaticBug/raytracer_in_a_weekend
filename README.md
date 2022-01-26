@@ -1,4 +1,6 @@
-![Screenshot](screenshot.png "This is has been resized to 50% to reduce size. The original looks pretty sharp.")
+![Random collection of balls on a cloudless day](gallery/random-cloudless.png "This is has been resized to 50% to reduce size. The original looks pretty sharp.")
+
+![Random collection of balls during sunset](gallery/random-sunset.png "This is has been resized to 50% to reduce size. The original looks pretty sharp.")
 
 `raytracer_in_a_weekend` is my attempt at making a ray-tracer while following along the excellent _Ray Tracing in One Weekend_ guide. It also served as a good mini-project to brush up my Rust skills.
 

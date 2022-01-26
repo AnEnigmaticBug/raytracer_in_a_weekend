@@ -6,11 +6,12 @@ use serde::{Deserialize, Serialize};
 
 use crate::camera::Camera;
 use crate::geometry::{Geometry, HitInfo};
-use crate::primitive::{Ray3, Vec3};
+use crate::primitive::Ray3;
+use crate::sky_box::SkyBox;
 
 #[derive(Serialize, Deserialize)]
 pub struct Scene {
-    pub sky_color: Vec3,
+    pub sky_box: SkyBox,
     pub camera: Camera,
     pub items: Vec<Geometry>,
 }

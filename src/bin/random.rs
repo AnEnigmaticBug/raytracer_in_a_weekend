@@ -7,7 +7,7 @@ use raytracer::{
     primitive::Vec3,
     ray_tracer::RayTracer,
     scene::Scene,
-    texture::{Solid, Texture},
+    texture::{Solid, Texture, Image}, sky_box::SkyBox,
 };
 
 /// Generate a scene made of randomly placed balls and ray trace it.
@@ -33,10 +33,29 @@ fn main() {
 
 fn setup_scene(wd: u32, ht: u32) -> Scene {
     let mut scene = Scene {
-        sky_color: Vec3::new(0.5, 0.7, 1.0),
+        sky_box: SkyBox {
+            up: Texture::Image(
+                Image::load("inputs/textures/yellowcloud_up.png").expect("Couldn't load texture"),
+            ),
+            dn: Texture::Image(
+                Image::load("inputs/textures/yellowcloud_dn.png").expect("Couldn't load texture"),
+            ),
+            lf: Texture::Image(
+                Image::load("inputs/textures/yellowcloud_lf.png").expect("Couldn't load texture"),
+            ),
+            rt: Texture::Image(
+                Image::load("inputs/textures/yellowcloud_rt.png").expect("Couldn't load texture"),
+            ),
+            ft: Texture::Image(
+                Image::load("inputs/textures/yellowcloud_ft.png").expect("Couldn't load texture"),
+            ),
+            bk: Texture::Image(
+                Image::load("inputs/textures/yellowcloud_bk.png").expect("Couldn't load texture"),
+            ),
+        },
         camera: CameraInitOptions {
-            pos: Vec3::new(9.0, 2.0, 2.0),
-            look_at: Vec3::new(0.0, 0.0, -1.0),
+            pos: Vec3::new(3.0, 1.5, 8.0),
+            look_at: Vec3::new(0.5, 0.0, -1.0),
             vup: Vec3::new(0.0, 1.0, 0.0),
             vt_fov: 30.0,
             aspect: wd as f32 / ht as f32,
@@ -96,7 +115,7 @@ fn setup_scene(wd: u32, ht: u32) -> Scene {
     }
 
     scene.items.push(Geometry::Sphere(Sphere {
-        center: Vec3::new(-4.0, 1.0, 0.0),
+        center: Vec3::new(-1.0, 1.0, -1.5),
         radius: 1.0,
         material: Material::Lambertian(Lambertian {
             texture: Texture::Solid(Solid {
@@ -112,7 +131,7 @@ fn setup_scene(wd: u32, ht: u32) -> Scene {
     }));
 
     scene.items.push(Geometry::Sphere(Sphere {
-        center: Vec3::new(4.0, 1.0, 0.0),
+        center: Vec3::new(1.0, 1.0, 1.5),
         radius: 1.0,
         material: Material::Metal(Metal {
             texture: Texture::Solid(Solid {
