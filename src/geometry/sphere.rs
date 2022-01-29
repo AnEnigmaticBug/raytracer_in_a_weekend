@@ -2,6 +2,7 @@ use std::f32::consts::PI;
 
 use serde::{Deserialize, Serialize};
 
+use crate::bvh::Aabb;
 use crate::material::Material;
 use crate::primitive::{Ray3, Vec3};
 
@@ -47,5 +48,13 @@ impl Sphere {
         }
 
         None
+    }
+
+    pub fn aabb(&self) -> Aabb {
+        let radius = Vec3::all(self.radius);
+        Aabb {
+            min: self.center - radius,
+            max: self.center + radius,
+        }
     }
 }

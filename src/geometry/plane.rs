@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+use crate::bvh::Aabb;
 use crate::material::Material;
 use crate::primitive::{Ray3, Vec3};
 
@@ -42,5 +43,9 @@ impl Plane {
         }
 
         todo!("Add UV calculation")
+    }
+
+    pub fn aabb(&self) -> Aabb {
+        todo!("Add AABB computation logic")
     }
 }

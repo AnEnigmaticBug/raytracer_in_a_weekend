@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate impl_ops;
 
+mod bvh;
 pub mod camera;
 pub mod geometry;
 pub mod material;

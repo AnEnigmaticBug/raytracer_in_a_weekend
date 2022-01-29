@@ -1,4 +1,4 @@
-use std::ops;
+use std::ops::{self, Index};
 
 use serde::{Deserialize, Serialize};
 
@@ -58,6 +58,19 @@ impl Vec3 {
         } else {
             // Total internal reflection
             None
+        }
+    }
+}
+
+impl Index<usize> for Vec3 {
+    type Output = f32;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        match index {
+            0 => &self.x,
+            1 => &self.y,
+            2 => &self.z,
+            _ => panic!("Invalid vec3 index: {}", index),
         }
     }
 }

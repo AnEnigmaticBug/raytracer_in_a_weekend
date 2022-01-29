@@ -1,6 +1,7 @@
 mod plane;
 mod sphere;
 
+use crate::bvh::Aabb;
 use crate::material::Material;
 use crate::primitive::{Ray3, Vec3};
 
@@ -28,6 +29,13 @@ impl Geometry {
         match self {
             Geometry::Plane(plane) => plane.hit(ray, tmin, tmax),
             Geometry::Sphere(sphere) => sphere.hit(ray, tmin, tmax),
+        }
+    }
+
+    fn aabb(&self) -> Aabb {
+        match self {
+            Geometry::Plane(plane) => plane.aabb(),
+            Geometry::Sphere(sphere) => sphere.aabb(),
         }
     }
 }
