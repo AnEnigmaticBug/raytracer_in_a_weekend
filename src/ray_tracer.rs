@@ -1,7 +1,7 @@
-use std::fs::File;
 use std::path::Path;
 
 use clap::Args;
+use image::{ColorType, ImageResult};
 use indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle};
 use rand::Rng;
 use rayon::prelude::*;
@@ -30,20 +30,15 @@ pub struct RayTracer {
 }
 
 impl RayTracer {
-    pub fn render_to_file<P: AsRef<Path>>(
-        &self,
-        scene: &Scene,
-        path: P,
-    ) -> Result<(), png::EncodingError> {
+    pub fn render_to_file<P: AsRef<Path>>(&self, scene: &Scene, path: P) -> ImageResult<()> {
         let pixels = self.color_scene(&scene);
-
-        let file = File::create(path).expect("Couldn't create file");
-
-        let mut encoder = png::Encoder::new(file, self.canvas_wd, self.canvas_ht);
-        encoder.set_color(png::ColorType::RGB);
-        encoder.set_depth(png::BitDepth::Eight);
-        let mut writer = encoder.write_header().unwrap();
-        writer.write_image_data(&pixels)
+        image::save_buffer(
+            path,
+            &pixels,
+            self.canvas_wd,
+            self.canvas_ht,
+            ColorType::Rgb8,
+        )
     }
 
     pub fn color_scene(&self, scene: &Scene) -> Vec<u8> {

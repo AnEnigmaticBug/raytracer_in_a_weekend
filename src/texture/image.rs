@@ -1,8 +1,7 @@
 use std::convert::TryFrom;
-use std::fs::File;
-use std::io;
 use std::path::Path;
 
+use image::{io::Reader, DynamicImage, GenericImageView, ImageError, ImageResult};
 use serde::{Deserialize, Serialize};
 
 use crate::primitive::Vec3;
@@ -17,48 +16,33 @@ struct TexturePath {
 pub struct Image {
     pub path: String,
     #[serde(skip_serializing)]
-    pub buf: Vec<u8>,
-    #[serde(skip_serializing)]
-    pub wd: usize,
-    #[serde(skip_serializing)]
-    pub ht: usize,
-    #[serde(skip_serializing)]
-    pub channels: usize,
+    image: DynamicImage,
 }
 
 impl Image {
-    pub fn load<P: AsRef<Path>>(path: P) -> Result<Self, io::Error> {
-        let decoder = png::Decoder::new(File::open(&path)?);
-        let (info, mut reader) = decoder.read_info()?;
-        let mut buf = vec![0; info.buffer_size()];
-        reader.next_frame(&mut buf)?;
+    pub fn load<P: AsRef<Path>>(path: P) -> ImageResult<Self> {
+        let image = Reader::open(&path)?.decode()?;
+        let channels = image.color().channel_count() as usize;
 
-        let channels = info.color_type.samples();
         assert!(channels == 3 || channels == 4);
 
         Ok(Image {
             path: path.as_ref().to_str().expect("Non UTF-8 path").to_owned(),
-            buf,
-            wd: info.width as usize,
-            ht: info.height as usize,
-            channels,
+            image,
         })
     }
 
     pub fn color(&self, u: f32, v: f32) -> Vec3 {
-        let x = (u * (self.wd - 1) as f32) as usize;
-        let y = (v * (self.ht - 1) as f32) as usize;
-        let i = (y * self.wd + x) * self.channels;
-        Vec3::new(
-            self.buf[i + 0] as f32 / 255.0,
-            self.buf[i + 1] as f32 / 255.0,
-            self.buf[i + 2] as f32 / 255.0,
-        )
+        let (wd, ht) = self.image.dimensions();
+        let x = (u * (wd - 1) as f32) as u32;
+        let y = (v * (ht - 1) as f32) as u32;
+        let [r, g, b, _] = self.image.get_pixel(x, y).0;
+        Vec3::new(r as f32 / 255.0, g as f32 / 255.0, b as f32 / 255.0)
     }
 }
 
 impl TryFrom<TexturePath> for Image {
-    type Error = io::Error;
+    type Error = ImageError;
 
     fn try_from(path: TexturePath) -> Result<Self, Self::Error> {
         Image::load(path.path)

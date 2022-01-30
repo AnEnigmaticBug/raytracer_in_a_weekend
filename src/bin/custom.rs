@@ -10,7 +10,8 @@ struct CliArgs {
     /// The JSON file which contains the scene description.
     #[clap(long)]
     scene: String,
-    /// The desired path of the rendered image.
+    /// The desired path of the rendered image. The extension (png/jpg) decides
+    /// the image format.
     #[clap(long, default_value = "scene.png")]
     output: String,
 }

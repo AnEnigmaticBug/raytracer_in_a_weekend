@@ -16,7 +16,8 @@ use raytracer::{
 struct CliArgs {
     #[clap(flatten)]
     ray_tracer: RayTracer,
-    /// The desired path of the rendered image.
+    /// The desired path of the rendered image. The extension (png/jpg) decides
+    /// the image format.
     #[clap(long, default_value = "scene.png")]
     output: String,
 }
