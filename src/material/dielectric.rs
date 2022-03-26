@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::geometry::HitInfo;
 use crate::primitive::{Ray3, Vec3};
 
-use super::RayInfo;
+use super::Interaction;
 
 #[derive(Serialize, Deserialize)]
 pub struct Dielectric {
@@ -12,7 +12,7 @@ pub struct Dielectric {
 }
 
 impl Dielectric {
-    pub fn interact(&self, ray: &Ray3, hit: &HitInfo) -> Option<RayInfo> {
+    pub fn interact(&self, ray: &Ray3, hit: &HitInfo) -> Interaction {
         let outward_normal;
         let ni_by_nt;
         let cos;
@@ -31,19 +31,19 @@ impl Dielectric {
             let reflection_probability = schlick(cos, self.ref_idx);
 
             if random::<f32>() > reflection_probability {
-                return Some(RayInfo {
+                return Interaction::NonTerminal {
                     ray: Ray3::new(hit.pos, refraction_dir),
                     attenuation: Vec3::all(1.0),
-                });
+                };
             }
         }
 
         let reflection_dir = ray.dir.reflect(&hit.normal);
 
-        Some(RayInfo {
+        Interaction::NonTerminal {
             ray: Ray3::new(hit.pos, reflection_dir),
             attenuation: Vec3::all(1.0),
-        })
+        }
     }
 }
 

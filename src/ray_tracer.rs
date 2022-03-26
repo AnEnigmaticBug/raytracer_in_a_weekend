@@ -6,6 +6,7 @@ use indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle};
 use rand::Rng;
 use rayon::prelude::*;
 
+use crate::material::Interaction;
 use crate::primitive::{Ray3, Vec3};
 use crate::scene::Scene;
 
@@ -88,10 +89,11 @@ impl RayTracer {
         }
 
         if let Some(hit) = scene.hit(ray, 0.001, f32::MAX) {
-            if let Some(info) = hit.material.interact(ray, &hit) {
-                self.color_ray(&info.ray, scene, depth + 1) * info.attenuation
-            } else {
-                Vec3::all(0.0)
+            match hit.material.interact(ray, &hit) {
+                Interaction::NonTerminal { ray, attenuation } => {
+                    self.color_ray(&ray, scene, depth + 1) * attenuation
+                }
+                Interaction::Terminal { color } => color,
             }
         } else {
             scene.sky_box.color(ray.dir)
