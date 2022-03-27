@@ -23,7 +23,7 @@ pub struct RayTracer {
 
     /// The number of samples taken per pixel. Higher values mean lesser noise.
     #[clap(short = 's', long = "samples", default_value_t = 48)]
-    pub num_samples: u8,
+    pub num_samples: u16,
 
     /// The maximum number of reflections per light ray. Most scenes don't need
     /// more than 20 reflections.
