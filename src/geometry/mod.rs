@@ -2,7 +2,6 @@ mod plane;
 mod sphere;
 
 use crate::bvh::Aabb;
-use crate::material::Material;
 use crate::primitive::{Ray3, Vec3};
 
 pub use plane::Plane;
@@ -15,13 +14,12 @@ pub enum Geometry {
     Sphere(Sphere),
 }
 
-pub struct HitInfo<'a> {
+pub struct HitInfo {
     pub t: f32,
     pub u: f32,
     pub v: f32,
     pub pos: Vec3,
     pub normal: Vec3,
-    pub material: &'a Material,
 }
 
 impl Geometry {

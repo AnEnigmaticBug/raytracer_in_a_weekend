@@ -3,7 +3,6 @@ use std::f32::consts::PI;
 use serde::{Deserialize, Serialize};
 
 use crate::bvh::Aabb;
-use crate::material::Material;
 use crate::primitive::{Ray3, Vec3};
 
 use super::HitInfo;
@@ -12,7 +11,6 @@ use super::HitInfo;
 pub struct Sphere {
     pub center: Vec3,
     pub radius: f32,
-    pub material: Material,
 }
 
 impl Sphere {
@@ -41,7 +39,6 @@ impl Sphere {
                         v: 1.0 - (normal.y + 1.0) / 2.0,
                         pos,
                         normal,
-                        material: &self.material,
                     });
                 }
             }

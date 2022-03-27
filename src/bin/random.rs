@@ -3,11 +3,13 @@ use rand::{thread_rng, Rng};
 use raytracer::{
     camera::CameraInitOptions,
     geometry::{Geometry, Sphere},
+    item::Item,
     material::{Dielectric, Lambertian, Material, Metal},
     primitive::Vec3,
     ray_tracer::RayTracer,
     scene::Scene,
-    texture::{Solid, Texture, Image}, sky_box::SkyBox,
+    sky_box::SkyBox,
+    texture::{Image, Solid, Texture},
 };
 
 /// Generate a scene made of randomly placed balls and ray trace it.
@@ -60,19 +62,22 @@ fn setup_scene(wd: u32, ht: u32) -> Scene {
             vup: Vec3::new(0.0, 1.0, 0.0),
             vt_fov: 30.0,
             aspect: wd as f32 / ht as f32,
-        }.into(),
+        }
+        .into(),
         items: Vec::with_capacity(1 + 12 * 12 + 3),
     };
 
-    scene.items.push(Geometry::Sphere(Sphere {
-        center: Vec3::new(0.0, -1000.0, 0.0),
-        radius: 1000.0,
+    scene.items.push(Item {
+        geometry: Geometry::Sphere(Sphere {
+            center: Vec3::new(0.0, -1000.0, 0.0),
+            radius: 1000.0,
+        }),
         material: Material::Lambertian(Lambertian {
             texture: Texture::Solid(Solid {
                 color: Vec3::all(0.5),
             }),
         }),
-    }));
+    });
 
     let mut rng = thread_rng();
 
@@ -107,40 +112,48 @@ fn setup_scene(wd: u32, ht: u32) -> Scene {
                 Material::Dielectric(Dielectric { ref_idx: 1.5 })
             };
 
-            scene.items.push(Geometry::Sphere(Sphere {
-                center,
-                radius: 0.2,
+            scene.items.push(Item {
+                geometry: Geometry::Sphere(Sphere {
+                    center,
+                    radius: 0.2,
+                }),
                 material,
-            }));
+            });
         }
     }
 
-    scene.items.push(Geometry::Sphere(Sphere {
-        center: Vec3::new(-1.0, 1.0, -1.5),
-        radius: 1.0,
+    scene.items.push(Item {
+        geometry: Geometry::Sphere(Sphere {
+            center: Vec3::new(-1.0, 1.0, -1.5),
+            radius: 1.0,
+        }),
         material: Material::Lambertian(Lambertian {
             texture: Texture::Solid(Solid {
                 color: Vec3::new(0.4, 0.2, 0.1),
             }),
         }),
-    }));
+    });
 
-    scene.items.push(Geometry::Sphere(Sphere {
-        center: Vec3::new(0.0, 1.0, 0.0),
-        radius: 1.0,
+    scene.items.push(Item {
+        geometry: Geometry::Sphere(Sphere {
+            center: Vec3::new(0.0, 1.0, 0.0),
+            radius: 1.0,
+        }),
         material: Material::Dielectric(Dielectric { ref_idx: 1.5 }),
-    }));
+    });
 
-    scene.items.push(Geometry::Sphere(Sphere {
-        center: Vec3::new(1.0, 1.0, 1.5),
-        radius: 1.0,
+    scene.items.push(Item {
+        geometry: Geometry::Sphere(Sphere {
+            center: Vec3::new(1.0, 1.0, 1.5),
+            radius: 1.0,
+        }),
         material: Material::Metal(Metal {
             texture: Texture::Solid(Solid {
                 color: Vec3::new(0.7, 0.6, 0.5),
             }),
             fuzz: 0.0,
         }),
-    }));
+    });
 
     scene
 }

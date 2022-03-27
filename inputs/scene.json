@@ -52,22 +52,24 @@
   },
   "items": [
     {
-      "Sphere": {
-        "center": {
-          "x": 0.0,
-          "y": -1000.0,
-          "z": 0.0
-        },
-        "radius": 1000.0,
-        "material": {
-          "Lambertian": {
-            "texture": {
-              "Solid": {
-                "color": {
-                  "x": 0.5,
-                  "y": 0.5,
-                  "z": 0.5
-                }
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 0.0,
+            "y": -1000.0,
+            "z": 0.0
+          },
+          "radius": 1000.0
+        }
+      },
+      "material": {
+        "Lambertian": {
+          "texture": {
+            "Solid": {
+              "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
               }
             }
           }
@@ -75,60 +77,66 @@
       }
     },
     {
-      "Sphere": {
-        "center": {
-          "x": -4.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "radius": 1.0,
-        "material": {
-          "Lambertian": {
-            "texture": {
-              "Image": {
-                "path": "inputs/textures/uv-map-test.png"
-              }
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -4.0,
+            "y": 1.0,
+            "z": 0.0
+          },
+          "radius": 1.0
+        }
+      },
+      "material": {
+        "Lambertian": {
+          "texture": {
+            "Image": {
+              "path": "inputs/textures/uv-map-test.png"
             }
           }
         }
       }
     },
     {
-      "Sphere": {
-        "center": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "radius": 1.0,
-        "material": {
-          "Dielectric": {
-            "ref_idx": 1.5
-          }
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0
+          },
+          "radius": 1.0
+        }
+      },
+      "material": {
+        "Dielectric": {
+          "ref_idx": 1.5
         }
       }
     },
     {
-      "Sphere": {
-        "center": {
-          "x": 4.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "radius": 1.0,
-        "material": {
-          "Metal": {
-            "texture": {
-              "Solid": {
-                "color": {
-                  "x": 0.7,
-                  "y": 0.6,
-                  "z": 0.5
-                }
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 4.0,
+            "y": 1.0,
+            "z": 0.0
+          },
+          "radius": 1.0
+        }
+      },
+      "material": {
+        "Metal": {
+          "texture": {
+            "Solid": {
+              "color": {
+                "x": 0.7,
+                "y": 0.6,
+                "z": 0.5
               }
-            },
-            "fuzz": 0.0
-          }
+            }
+          },
+          "fuzz": 0.0
         }
       }
     }

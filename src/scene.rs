@@ -1,11 +1,11 @@
 use std::fs::File;
-use std::io::{Read, self};
+use std::io::{self, Read};
 use std::path::Path;
 
 use serde::{Deserialize, Serialize};
 
 use crate::camera::Camera;
-use crate::geometry::{Geometry, HitInfo};
+use crate::item::{HitInfoAndMaterial, Item};
 use crate::primitive::Ray3;
 use crate::sky_box::SkyBox;
 
@@ -13,7 +13,7 @@ use crate::sky_box::SkyBox;
 pub struct Scene {
     pub sky_box: SkyBox,
     pub camera: Camera,
-    pub items: Vec<Geometry>,
+    pub items: Vec<Item>,
 }
 
 impl Scene {
@@ -25,8 +25,8 @@ impl Scene {
         Ok(serde_json::from_str(&contents)?)
     }
 
-    pub fn hit(&self, ray: &Ray3, tmin: f32, tmax: f32) -> Option<HitInfo> {
-        let mut closest_hit: Option<HitInfo> = None;
+    pub fn hit(&self, ray: &Ray3, tmin: f32, tmax: f32) -> Option<HitInfoAndMaterial> {
+        let mut closest_hit: Option<HitInfoAndMaterial> = None;
 
         for hit in self
             .items
@@ -34,7 +34,7 @@ impl Scene {
             .filter_map(|item| item.hit(ray, tmin, tmax))
         {
             closest_hit = match closest_hit {
-                Some(closest_hit) if hit.t < closest_hit.t => Some(hit),
+                Some(closest_hit) if hit.0.t < closest_hit.0.t => Some(hit),
                 None => Some(hit),
                 _ => closest_hit,
             };

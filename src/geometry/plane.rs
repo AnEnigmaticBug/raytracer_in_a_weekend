@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 
 use crate::bvh::Aabb;
-use crate::material::Material;
 use crate::primitive::{Ray3, Vec3};
 
 use super::HitInfo;
@@ -11,7 +10,6 @@ pub struct Plane {
     pub center: Vec3,
     pub u: Vec3,
     pub v: Vec3,
-    pub material: Material,
 }
 
 impl Plane {
