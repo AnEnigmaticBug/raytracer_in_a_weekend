@@ -11,4 +11,5 @@ pub mod ray_tracer;
 pub mod scene;
 pub mod sky_box;
 pub mod texture;
+pub mod tone_mapper;
 mod util;

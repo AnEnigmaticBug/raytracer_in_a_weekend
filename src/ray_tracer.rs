@@ -10,6 +10,7 @@ use crate::item::HitInfoAndMaterial;
 use crate::material::Interaction;
 use crate::primitive::{Ray3, Vec3};
 use crate::scene::Scene;
+use crate::tone_mapper::ToneMapper;
 
 #[derive(Args)]
 pub struct RayTracer {
@@ -29,6 +30,12 @@ pub struct RayTracer {
     /// more than 20 reflections.
     #[clap(short = 'r', long, default_value_t = 16)]
     pub max_reflections: u8,
+
+    /// Tone mapper maps HDR (High Dynamic Range) color values to SDR (Standard
+    /// Dynamic Range) color values. Different tone mappers can change the same
+    /// HDR inputs into very different outputs.
+    #[clap(long = "tone-mapper", arg_enum, default_value = "clamp")]
+    pub tone_mapper: ToneMapper,
 }
 
 impl RayTracer {
@@ -57,7 +64,7 @@ impl RayTracer {
             .progress_with(bar)
             .flat_map_iter(|j| (0..self.canvas_wd).map(move |i| (i, j)))
             .flat_map_iter(|(i, j)| {
-                let color = self.color_pixel(&scene, i, j);
+                let color = self.tone_mapper.map(self.color_pixel(&scene, i, j));
 
                 let r = (255.99 * color.x) as u8;
                 let g = (255.99 * color.y) as u8;

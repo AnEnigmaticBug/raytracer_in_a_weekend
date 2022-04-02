@@ -10,11 +10,11 @@ pub struct Vec3 {
 }
 
 impl Vec3 {
-    pub fn new(x: f32, y: f32, z: f32) -> Self {
+    pub const fn new(x: f32, y: f32, z: f32) -> Self {
         Vec3 { x, y, z }
     }
 
-    pub fn all(n: f32) -> Self {
+    pub const fn all(n: f32) -> Self {
         Vec3::new(n, n, n)
     }
 
@@ -60,6 +60,14 @@ impl Vec3 {
             None
         }
     }
+
+    pub fn clamp(&self, min: &Vec3, max: &Vec3) -> Self {
+        Vec3::new(
+            self.x.clamp(min.x, max.x),
+            self.y.clamp(min.y, max.y),
+            self.z.clamp(min.z, max.z),
+        )
+    }
 }
 
 impl Index<usize> for Vec3 {
@@ -77,6 +85,7 @@ impl Index<usize> for Vec3 {
 
 impl_op_ex!(- |a: &Vec3| -> Vec3 { -1.0 * a });
 
+impl_op_ex_commutative!(+ |a: &Vec3, b: f32| -> Vec3 { Vec3::new(a.x + b, a.y + b, a.z + b) });
 impl_op_ex_commutative!(* |a: &Vec3, b: f32| -> Vec3 { Vec3::new(a.x * b, a.y * b, a.z * b) });
 impl_op_ex!(/ |a: &Vec3, b: f32| -> Vec3 { Vec3::new(a.x / b, a.y / b, a.z / b) });
 

@@ -16,6 +16,7 @@ These things weren't covered in _Ray Tracing in One Weekend_ but I added them an
 * Multi-threading using [`rayon`](https://crates.io/crates/rayon)
 * Planes
 * Textures: images (PNG and JPEG) and linear gradients
+* Tone-mapping
 * Scene serialization/deserialization via JSON files
 
 ## Running
