@@ -1,5 +1,5 @@
 use clap::Parser;
-use rand::{Rng, SeedableRng};
+use rand::{thread_rng, Rng, SeedableRng};
 use rand_xoshiro::Xoshiro256PlusPlus;
 use raytracer::{
     camera::CameraInitOptions,
@@ -20,14 +20,17 @@ struct CliArgs {
     #[clap(long, default_value_t = 2.00)]
     aspect: f32,
     /// The seed of the RNG which places items in the scene. The same seed will
-    /// result in the same scene.
-    #[clap(long, default_value_t = 1718)]
-    seed: u64,
+    /// result in the same scene. If you don't provide a seed, one will created
+    /// for you.
+    #[clap(long)]
+    seed: Option<u64>,
 }
 
 fn main() {
     let args = CliArgs::parse();
-    let scene = setup_scene(args.seed, args.aspect);
+    let seed = args.seed.unwrap_or(thread_rng().gen());
+    eprintln!("{} is the scene generation seed", seed);
+    let scene = setup_scene(seed, args.aspect);
     let json = serde_json::to_string_pretty(&scene).expect("Couldn't serialize scene");
     println!("{}", json);
 }
