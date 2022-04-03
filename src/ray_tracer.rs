@@ -1,6 +1,7 @@
 use std::path::Path;
 
 use clap::Args;
+use glam::Vec3;
 use image::{ColorType, ImageResult};
 use indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle};
 use rand::Rng;
@@ -8,7 +9,7 @@ use rayon::prelude::*;
 
 use crate::item::HitInfoAndMaterial;
 use crate::material::Interaction;
-use crate::primitive::{Ray3, Vec3};
+use crate::primitive::Ray3;
 use crate::scene::Scene;
 use crate::tone_mapper::ToneMapper;
 
@@ -76,7 +77,7 @@ impl RayTracer {
     }
 
     fn color_pixel(&self, scene: &Scene, i: u32, j: u32) -> Vec3 {
-        let mut color = Vec3::all(0.0);
+        let mut color = Vec3::ZERO;
         let mut rng = rand::thread_rng();
 
         for _ in 0..self.num_samples {
@@ -93,7 +94,7 @@ impl RayTracer {
 
     fn color_ray(&self, ray: &Ray3, scene: &Scene, depth: u8) -> Vec3 {
         if depth >= self.max_reflections {
-            return Vec3::all(0.0);
+            return Vec3::ZERO;
         }
 
         if let Some(HitInfoAndMaterial(hit_info, material)) = scene.hit(ray, 0.001, f32::MAX) {

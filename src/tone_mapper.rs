@@ -1,4 +1,4 @@
-use crate::primitive::Vec3;
+use glam::Vec3;
 
 #[derive(clap::ArgEnum, Clone)]
 pub enum ToneMapper {
@@ -12,7 +12,7 @@ pub enum ToneMapper {
 impl ToneMapper {
     pub fn map(&self, color: Vec3) -> Vec3 {
         match self {
-            Self::Clamp => color.clamp(&Vec3::all(0.0), &Vec3::all(1.0)),
+            Self::Clamp => color.clamp(Vec3::ZERO, Vec3::ONE),
             Self::Uncharted => uncharted_tone_map(color),
         }
     }
@@ -27,12 +27,12 @@ fn uncharted_tone_map_partial(color: Vec3) -> Vec3 {
     const E: f32 = 0.02;
     const F: f32 = 0.30;
 
-    ((color * (A * color + C * B) + D * E) / (color * (A * color + B) + D * F)) - Vec3::all(E / F)
+    ((color * (A * color + C * B) + D * E) / (color * (A * color + B) + D * F)) - Vec3::splat(E / F)
 }
 
 fn uncharted_tone_map(color: Vec3) -> Vec3 {
     const EXPOSURE_BIAS: f32 = 2.0;
-    const W: Vec3 = Vec3::all(11.2);
-    let white_scale = Vec3::all(1.0) / uncharted_tone_map_partial(W);
+    let w: Vec3 = Vec3::splat(11.2);
+    let white_scale = 1.0 / uncharted_tone_map_partial(w);
     uncharted_tone_map_partial(color * EXPOSURE_BIAS) * white_scale
 }

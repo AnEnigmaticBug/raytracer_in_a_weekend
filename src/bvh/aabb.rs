@@ -1,4 +1,6 @@
-use crate::primitive::{Ray3, Vec3};
+use glam::Vec3;
+
+use crate::primitive::Ray3;
 
 pub struct Aabb {
     pub min: Vec3,
@@ -46,14 +48,14 @@ mod tests {
     }
 
     fn test_ray() -> Ray3 {
-        Ray3::new(Vec3::all(1.0), Vec3::all(1.0))
+        Ray3::new(Vec3::ONE, Vec3::ONE)
     }
 
     #[test]
     fn aabb_hit_accepts_in_happy_case() {
         assert!(Aabb {
-            min: Vec3::all(1.0),
-            max: Vec3::all(8.0),
+            min: Vec3::ONE,
+            max: Vec3::splat(8.0),
         }
         .hit(&test_ray(), TMIN, TMAX));
     }
@@ -70,48 +72,48 @@ mod tests {
     #[test]
     fn aabb_hit_rejects_if_ray_dir_is_fine_but_ray_tmin_tmax_are_bad() {
         assert!(!Aabb {
-            min: Vec3::all(8.0),
-            max: Vec3::all(9.0),
+            min: Vec3::splat(8.0),
+            max: Vec3::splat(9.0),
         }
         .hit(&test_ray(), TMIN, TMAX));
 
         assert!(!Aabb {
-            min: Vec3::all(0.0),
-            max: Vec3::all(1.0),
+            min: Vec3::ZERO,
+            max: Vec3::ONE,
         }
         .hit(&test_ray(), TMIN, TMAX));
     }
 
     #[test]
     fn aabb_hit_works_when_ray_is_along_an_axis() {
-        let ray = Ray3::new(Vec3::all(1.0), Vec3::new(1.0, 1.0, 0.0));
+        let ray = Ray3::new(Vec3::ONE, Vec3::new(1.0, 1.0, 0.0));
 
         assert!(Aabb {
-            min: Vec3::all(0.0),
-            max: Vec3::all(8.0),
+            min: Vec3::ZERO,
+            max: Vec3::splat(8.0),
         }
         .hit(&ray, TMIN, TMAX));
 
         assert!(!Aabb {
-            min: Vec3::all(0.0),
-            max: Vec3::all(0.5),
+            min: Vec3::ZERO,
+            max: Vec3::splat(0.5),
         }
         .hit(&ray, TMIN, TMAX));
     }
 
     #[test]
     fn aabb_hit_works_when_ray_has_negative_dir() {
-        let ray = Ray3::new(Vec3::all(7.0), Vec3::all(-1.0));
+        let ray = Ray3::new(Vec3::splat(7.0), Vec3::splat(-1.0));
 
         assert!(Aabb {
-            min: Vec3::all(2.0),
-            max: Vec3::all(8.0),
+            min: Vec3::splat(2.0),
+            max: Vec3::splat(8.0),
         }
         .hit(&ray, TMIN, TMAX));
 
         assert!(!Aabb {
-            min: Vec3::all(0.0),
-            max: Vec3::all(0.5),
+            min: Vec3::ZERO,
+            max: Vec3::splat(0.5),
         }
         .hit(&ray, TMIN, TMAX));
     }

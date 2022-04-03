@@ -1,7 +1,7 @@
+use glam::Vec3;
 use serde::{Deserialize, Serialize};
 
 use crate::geometry::HitInfo;
-use crate::primitive::Vec3;
 use crate::texture::Texture;
 
 use super::Interaction;

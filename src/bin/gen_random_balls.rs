@@ -1,4 +1,5 @@
 use clap::Parser;
+use glam::Vec3;
 use rand::{thread_rng, Rng, SeedableRng};
 use rand_xoshiro::Xoshiro256PlusPlus;
 use raytracer::{
@@ -6,7 +7,6 @@ use raytracer::{
     geometry::{Geometry, Sphere},
     item::Item,
     material::{Dielectric, Lambertian, Material, Metal},
-    primitive::Vec3,
     scene::Scene,
     sky_box::SkyBox,
     texture::{Image, Solid, Texture},
@@ -75,7 +75,7 @@ fn setup_scene(scene_seed: u64, aspect: f32) -> Scene {
         }),
         material: Material::Lambertian(Lambertian {
             texture: Texture::Solid(Solid {
-                color: Vec3::all(0.5),
+                color: Vec3::splat(0.5),
             }),
         }),
     });

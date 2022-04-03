@@ -1,56 +1,21 @@
-use std::ops::{self, Index};
+use glam::Vec3;
 
-use serde::{Deserialize, Serialize};
-
-#[derive(Clone, Copy, Serialize, Deserialize)]
-pub struct Vec3 {
-    pub x: f32,
-    pub y: f32,
-    pub z: f32,
+pub trait Vec3Utils {
+    fn reflect(&self, normal: Self) -> Self;
+    fn refract(&self, normal: Self, ni_by_nt: f32) -> Option<Self>
+    where
+        Self: Sized;
 }
 
-impl Vec3 {
-    pub const fn new(x: f32, y: f32, z: f32) -> Self {
-        Vec3 { x, y, z }
-    }
-
-    pub const fn all(n: f32) -> Self {
-        Vec3::new(n, n, n)
-    }
-
-    pub fn dot(&self, rhs: &Vec3) -> f32 {
-        let pdt = self * rhs;
-        pdt.x + pdt.y + pdt.z
-    }
-
-    pub fn cross(&self, rhs: &Vec3) -> Self {
-        Vec3::new(
-            self.y * rhs.z - self.z * rhs.y,
-            self.z * rhs.x - self.x * rhs.z,
-            self.x * rhs.y - self.y * rhs.x,
-        )
-    }
-
-    pub fn len_squared(&self) -> f32 {
-        self.dot(self)
-    }
-
-    pub fn len(&self) -> f32 {
-        self.len_squared().sqrt()
-    }
-
-    pub fn normalized(&self) -> Self {
-        self / self.len()
-    }
-
-    pub fn reflect(&self, normal: &Vec3) -> Self {
+impl Vec3Utils for Vec3 {
+    fn reflect(&self, normal: Self) -> Self {
         let normal_component = self.dot(normal) * normal;
-        self - 2.0 * normal_component
+        *self - 2.0 * normal_component
     }
 
-    pub fn refract(&self, normal: &Vec3, ni_by_nt: f32) -> Option<Self> {
-        let dir = self.normalized();
-        let cos = dir.dot(&normal);
+    fn refract(&self, normal: Self, ni_by_nt: f32) -> Option<Self> {
+        let dir = self.normalize();
+        let cos = dir.dot(normal);
         let discriminant = 1.0 - ni_by_nt.powi(2) * (1.0 - cos.powi(2));
 
         if discriminant > 0.0 {
@@ -60,36 +25,4 @@ impl Vec3 {
             None
         }
     }
-
-    pub fn clamp(&self, min: &Vec3, max: &Vec3) -> Self {
-        Vec3::new(
-            self.x.clamp(min.x, max.x),
-            self.y.clamp(min.y, max.y),
-            self.z.clamp(min.z, max.z),
-        )
-    }
 }
-
-impl Index<usize> for Vec3 {
-    type Output = f32;
-
-    fn index(&self, index: usize) -> &Self::Output {
-        match index {
-            0 => &self.x,
-            1 => &self.y,
-            2 => &self.z,
-            _ => panic!("Invalid vec3 index: {}", index),
-        }
-    }
-}
-
-impl_op_ex!(- |a: &Vec3| -> Vec3 { -1.0 * a });
-
-impl_op_ex_commutative!(+ |a: &Vec3, b: f32| -> Vec3 { Vec3::new(a.x + b, a.y + b, a.z + b) });
-impl_op_ex_commutative!(* |a: &Vec3, b: f32| -> Vec3 { Vec3::new(a.x * b, a.y * b, a.z * b) });
-impl_op_ex!(/ |a: &Vec3, b: f32| -> Vec3 { Vec3::new(a.x / b, a.y / b, a.z / b) });
-
-impl_op_ex!(+ |a: &Vec3, b: &Vec3| -> Vec3 { Vec3::new(a.x + b.x, a.y + b.y, a.z + b.z) });
-impl_op_ex!(- |a: &Vec3, b: &Vec3| -> Vec3 { Vec3::new(a.x - b.x, a.y - b.y, a.z - b.z) });
-impl_op_ex!(* |a: &Vec3, b: &Vec3| -> Vec3 { Vec3::new(a.x * b.x, a.y * b.y, a.z * b.z) });
-impl_op_ex!(/ |a: &Vec3, b: &Vec3| -> Vec3 { Vec3::new(a.x / b.x, a.y / b.y, a.z / b.z) });

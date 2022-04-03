@@ -1,8 +1,8 @@
 use std::f32::consts::FRAC_PI_4;
 
+use glam::Vec3;
 use serde::{Deserialize, Serialize};
 
-use crate::primitive::Vec3;
 use crate::texture::{Solid, Texture};
 use crate::util::map;
 
@@ -104,24 +104,23 @@ fn dir_of_max_abs_val(x: f32, y: f32, z: f32) -> Dir {
 
 #[cfg(test)]
 mod tests {
-    use crate::primitive::Vec3;
     use super::*;
 
     #[test]
     fn uv_dir_works_in_front() {
-        let top_lf = Vec3::new(-1.0, 1.0, -1.0).normalized();
+        let top_lf = Vec3::new(-1.0, 1.0, -1.0).normalize();
         assert_eq!((0.0, 0.0), Dir::Ft.uv(top_lf.x, top_lf.y, top_lf.z));
 
-        let top_rt = Vec3::new(1.0, 1.0, -1.0).normalized();
+        let top_rt = Vec3::new(1.0, 1.0, -1.0).normalize();
         assert_eq!((1.0, 0.0), Dir::Ft.uv(top_rt.x, top_rt.y, top_rt.z));
 
-        let center = Vec3::new(0.0, 0.0, -1.0).normalized();
+        let center = Vec3::new(0.0, 0.0, -1.0).normalize();
         assert_eq!((0.5, 0.5), Dir::Ft.uv(center.x, center.y, center.z));
 
-        let bot_lf = Vec3::new(-1.0, -1.0, -1.0).normalized();
+        let bot_lf = Vec3::new(-1.0, -1.0, -1.0).normalize();
         assert_eq!((0.0, 1.0), Dir::Ft.uv(bot_lf.x, bot_lf.y, bot_lf.z));
 
-        let bot_rt = Vec3::new(1.0, -1.0, -1.0).normalized();
+        let bot_rt = Vec3::new(1.0, -1.0, -1.0).normalize();
         assert_eq!((1.0, 1.0), Dir::Ft.uv(bot_rt.x, bot_rt.y, bot_rt.z));
     }
 }

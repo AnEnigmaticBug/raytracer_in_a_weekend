@@ -1,9 +1,10 @@
 use std::f32::consts::PI;
 
+use glam::Vec3;
 use serde::{Deserialize, Serialize};
 
 use crate::bvh::Aabb;
-use crate::primitive::{Ray3, Vec3};
+use crate::primitive::Ray3;
 
 use super::HitInfo;
 
@@ -17,9 +18,9 @@ impl Sphere {
     pub fn hit(&self, ray: &Ray3, tmin: f32, tmax: f32) -> Option<HitInfo> {
         let oc = ray.pos - self.center;
 
-        let a = ray.dir.len_squared();
-        let b = ray.dir.dot(&oc);
-        let c = oc.len_squared() - self.radius.powi(2);
+        let a = ray.dir.length_squared();
+        let b = ray.dir.dot(oc);
+        let c = oc.length_squared() - self.radius.powi(2);
 
         let discriminant = b.powi(2) - a * c;
 
@@ -48,7 +49,7 @@ impl Sphere {
     }
 
     pub fn aabb(&self) -> Aabb {
-        let radius = Vec3::all(self.radius);
+        let radius = Vec3::splat(self.radius);
         Aabb {
             min: self.center - radius,
             max: self.center + radius,

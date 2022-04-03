@@ -196,6 +196,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "glam"
+version = "0.20.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3412e74893a912839a67e975aca0c88561e20e5461d2d358a5fa6d3b229fae59"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "hashbrown"
 version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -231,12 +240,6 @@ dependencies = [
  "num-traits",
  "png",
 ]
-
-[[package]]
-name = "impl_ops"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "90f97a5f38dd3ccfbe7aa80f4a0c00930f21b922c74195be0201c51028f22dcf"
 
 [[package]]
 name = "indexmap"
@@ -504,8 +507,8 @@ name = "raytracer"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "glam",
  "image",
- "impl_ops",
  "indicatif",
  "rand",
  "rand_xoshiro",

@@ -5,9 +5,10 @@ mod metal;
 mod util;
 
 use crate::geometry::HitInfo;
-use crate::primitive::{Ray3, Vec3};
+use crate::primitive::Ray3;
 
 pub use dielectric::Dielectric;
+use glam::Vec3;
 pub use lambertian::Lambertian;
 pub use light::Light;
 pub use metal::Metal;

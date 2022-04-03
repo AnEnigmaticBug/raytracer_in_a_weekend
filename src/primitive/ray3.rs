@@ -1,4 +1,4 @@
-use super::Vec3;
+use glam::Vec3;
 
 pub struct Ray3 {
     pub pos: Vec3,

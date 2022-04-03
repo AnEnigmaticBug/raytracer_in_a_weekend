@@ -2,8 +2,9 @@ mod plane;
 mod sphere;
 
 use crate::bvh::Aabb;
-use crate::primitive::{Ray3, Vec3};
+use crate::primitive::Ray3;
 
+use glam::Vec3;
 pub use plane::Plane;
 use serde::{Deserialize, Serialize};
 pub use sphere::Sphere;

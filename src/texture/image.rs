@@ -1,10 +1,9 @@
 use std::convert::TryFrom;
 use std::path::Path;
 
+use glam::Vec3;
 use image::{io::Reader, DynamicImage, GenericImageView, ImageError, ImageResult};
 use serde::{Deserialize, Serialize};
-
-use crate::primitive::Vec3;
 
 #[derive(Deserialize)]
 struct TexturePath {

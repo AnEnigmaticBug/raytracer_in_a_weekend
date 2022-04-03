@@ -1,8 +1,9 @@
 use std::f32::consts::PI;
 
+use glam::Vec3;
 use serde::{Deserialize, Serialize};
 
-use crate::primitive::{Ray3, Vec3};
+use crate::primitive::Ray3;
 
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(from = "CameraInitOptions", into = "CameraInitOptions")]
@@ -39,9 +40,9 @@ impl From<CameraInitOptions> for Camera {
         let half_ht = (theta / 2.0).tan();
         let half_wd = options.aspect * half_ht;
 
-        let w = (options.pos - options.look_at).normalized();
-        let u = options.vup.cross(&w).normalized();
-        let v = w.cross(&u);
+        let w = (options.pos - options.look_at).normalize();
+        let u = options.vup.cross(w).normalize();
+        let v = w.cross(u);
 
         Camera {
             pos: options.pos,

@@ -1,6 +1,5 @@
+use glam::Vec3;
 use serde::{Deserialize, Serialize};
-
-use crate::primitive::Vec3;
 
 #[derive(Serialize, Deserialize)]
 pub struct Solid {

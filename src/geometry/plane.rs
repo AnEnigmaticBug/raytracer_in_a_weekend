@@ -1,7 +1,8 @@
+use glam::Vec3;
 use serde::{Deserialize, Serialize};
 
 use crate::bvh::Aabb;
-use crate::primitive::{Ray3, Vec3};
+use crate::primitive::Ray3;
 
 use super::HitInfo;
 
@@ -14,10 +15,10 @@ pub struct Plane {
 
 impl Plane {
     pub fn hit(&self, ray: &Ray3, tmin: f32, tmax: f32) -> Option<HitInfo> {
-        let normal = self.u.cross(&self.v);
+        let normal = self.u.cross(self.v);
 
-        let num = (self.center - ray.pos).dot(&normal);
-        let den = ray.dir.dot(&normal);
+        let num = (self.center - ray.pos).dot(normal);
+        let den = ray.dir.dot(normal);
 
         if den.abs() < 0.001 {
             // Ray is parallel to the plane
@@ -33,8 +34,8 @@ impl Plane {
         let pos = ray.point_at_param(t);
         let sep = pos - self.center;
 
-        if self.u.dot(&sep).abs() > self.u.len_squared()
-            || self.v.dot(&sep).abs() > self.v.len_squared()
+        if self.u.dot(sep).abs() > self.u.length_squared()
+            || self.v.dot(sep).abs() > self.v.length_squared()
         {
             // Ray never touches this plane
             return None;

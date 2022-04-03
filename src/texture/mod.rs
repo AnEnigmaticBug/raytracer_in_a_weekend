@@ -1,13 +1,12 @@
+use glam::Vec3;
 use serde::{Deserialize, Serialize};
-
-use crate::primitive::Vec3;
 
 pub use self::image::Image;
 pub use self::linear_gradient::LinearGradient;
 pub use self::solid::Solid;
 
-mod linear_gradient;
 mod image;
+mod linear_gradient;
 mod solid;
 
 #[derive(Serialize, Deserialize)]

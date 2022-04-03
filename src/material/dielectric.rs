@@ -1,8 +1,9 @@
+use glam::Vec3;
 use rand::random;
 use serde::{Deserialize, Serialize};
 
 use crate::geometry::HitInfo;
-use crate::primitive::{Ray3, Vec3};
+use crate::primitive::{Ray3, Vec3Utils};
 
 use super::Interaction;
 
@@ -17,32 +18,32 @@ impl Dielectric {
         let ni_by_nt;
         let cos;
 
-        if ray.dir.dot(&hit.normal) > 0.0 {
+        if ray.dir.dot(hit.normal) > 0.0 {
             outward_normal = -hit.normal;
             ni_by_nt = self.ref_idx;
-            cos = self.ref_idx * ray.dir.normalized().dot(&hit.normal);
+            cos = self.ref_idx * ray.dir.normalize().dot(hit.normal);
         } else {
             outward_normal = hit.normal;
             ni_by_nt = 1.0 / self.ref_idx;
-            cos = -ray.dir.normalized().dot(&hit.normal);
+            cos = -ray.dir.normalize().dot(hit.normal);
         }
 
-        if let Some(refraction_dir) = ray.dir.refract(&outward_normal, ni_by_nt) {
+        if let Some(refraction_dir) = ray.dir.refract(outward_normal, ni_by_nt) {
             let reflection_probability = schlick(cos, self.ref_idx);
 
             if random::<f32>() > reflection_probability {
                 return Interaction::NonTerminal {
                     ray: Ray3::new(hit.pos, refraction_dir),
-                    attenuation: Vec3::all(1.0),
+                    attenuation: Vec3::ONE,
                 };
             }
         }
 
-        let reflection_dir = ray.dir.reflect(&hit.normal);
+        let reflection_dir = ray.dir.reflect(hit.normal);
 
         Interaction::NonTerminal {
             ray: Ray3::new(hit.pos, reflection_dir),
-            attenuation: Vec3::all(1.0),
+            attenuation: Vec3::ONE,
         }
     }
 }
