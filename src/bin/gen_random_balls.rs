@@ -1,12 +1,12 @@
 use clap::Parser;
-use rand::{thread_rng, Rng};
+use rand::{Rng, SeedableRng};
+use rand_xoshiro::Xoshiro256PlusPlus;
 use raytracer::{
     camera::CameraInitOptions,
     geometry::{Geometry, Sphere},
     item::Item,
     material::{Dielectric, Lambertian, Material, Metal},
     primitive::Vec3,
-    ray_tracer::RayTracer,
     scene::Scene,
     sky_box::SkyBox,
     texture::{Image, Solid, Texture},
@@ -16,25 +16,23 @@ use raytracer::{
 #[derive(Parser)]
 #[clap(about)]
 struct CliArgs {
-    #[clap(flatten)]
-    ray_tracer: RayTracer,
-    /// The desired path of the rendered image. The extension (png/jpg) decides
-    /// the image format.
-    #[clap(long, default_value = "scene.png")]
-    output: String,
+    /// Aspect ratio of the camera.
+    #[clap(long, default_value_t = 2.00)]
+    aspect: f32,
+    /// The seed of the RNG which places items in the scene. The same seed will
+    /// result in the same scene.
+    #[clap(long, default_value_t = 1718)]
+    seed: u64,
 }
 
 fn main() {
     let args = CliArgs::parse();
-    let ray_tracer = args.ray_tracer;
-    let scene = setup_scene(ray_tracer.canvas_wd, ray_tracer.canvas_ht);
-
-    ray_tracer
-        .render_to_file(&scene, args.output)
-        .expect("Couldn't write image data");
+    let scene = setup_scene(args.seed, args.aspect);
+    let json = serde_json::to_string_pretty(&scene).expect("Couldn't serialize scene");
+    println!("{}", json);
 }
 
-fn setup_scene(wd: u32, ht: u32) -> Scene {
+fn setup_scene(scene_seed: u64, aspect: f32) -> Scene {
     let mut scene = Scene {
         sky_box: SkyBox {
             up: Texture::Image(
@@ -61,7 +59,7 @@ fn setup_scene(wd: u32, ht: u32) -> Scene {
             look_at: Vec3::new(0.5, 0.0, -1.0),
             vup: Vec3::new(0.0, 1.0, 0.0),
             vt_fov: 30.0,
-            aspect: wd as f32 / ht as f32,
+            aspect,
         }
         .into(),
         items: Vec::with_capacity(1 + 12 * 12 + 3),
@@ -79,11 +77,11 @@ fn setup_scene(wd: u32, ht: u32) -> Scene {
         }),
     });
 
-    let mut rng = thread_rng();
+    let mut rng = Xoshiro256PlusPlus::seed_from_u64(scene_seed);
 
     for a in -6..6 {
         for b in -6..6 {
-            let offset = Vec3::new(rng.gen(), 0.0, rng.gen()) * 0.9;
+            let offset = Vec3::new(rng.gen(), 0.0, rng.gen()) * 0.6;
             let center = Vec3::new(a as f32, 0.2, b as f32) + offset;
 
             let material_chooser = rng.gen::<f32>();
