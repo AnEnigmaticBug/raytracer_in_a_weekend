@@ -1,4 +1,4 @@
-use std::f32::consts::{PI, TAU};
+use std::f32::consts::{FRAC_PI_2, PI, TAU};
 
 use glam::Vec3;
 use serde::{Deserialize, Serialize};
@@ -70,8 +70,9 @@ impl Sphere {
 fn compute_uv(normal: Vec3) -> (f32, f32) {
     // The angle is measured from the -z axis in the anti clockwise direction.
     // (viewed from the top). It goes from 0 to 2π.
-    let angle = f32::atan2(normal.x, normal.z) + PI;
-    (angle / TAU, 1.0 - (normal.y + 1.0) / 2.0)
+    let u_angle = f32::atan2(normal.x, normal.z) + PI;
+    let v_angle = FRAC_PI_2 - normal.y.asin();
+    (u_angle / TAU, v_angle / PI)
 }
 
 #[cfg(test)]
