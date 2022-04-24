@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use crate::bvh::Aabb;
 use crate::primitive::Ray3;
 
-use super::HitInfo;
+use super::{HitInfo, Tbn3};
 
 #[derive(Serialize, Deserialize)]
 pub struct Sphere {
@@ -40,7 +40,7 @@ impl Sphere {
                         u,
                         v,
                         pos,
-                        normal,
+                        tbn: Tbn3::from_tn(Vec3::Y.cross(normal), normal),
                     });
                 }
             }
@@ -79,7 +79,7 @@ fn compute_uv(normal: Vec3) -> (f32, f32) {
 mod tests {
     use glam::Vec3;
 
-    use crate::primitive::Ray3;
+    use crate::{geometry::Tbn3, primitive::Ray3};
 
     use super::*;
 
@@ -110,6 +110,7 @@ mod tests {
 
         assert_eq!(hit.t, 1.0);
         assert_eq!(hit.pos, Vec3::Z);
+        assert_eq!(hit.tbn, Tbn3::from_tn(Vec3::X, Vec3::Z));
 
         // hit on -x axis
         let ray = Ray3::new(-2.0 * Vec3::X, Vec3::X);
@@ -117,5 +118,6 @@ mod tests {
 
         assert_eq!(hit.t, 1.0);
         assert_eq!(hit.pos, -Vec3::X);
+        assert_eq!(hit.tbn, Tbn3::from_tn(Vec3::Z, -Vec3::X));
     }
 }

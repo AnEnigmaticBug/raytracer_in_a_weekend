@@ -2,30 +2,43 @@ use glam::Vec3;
 use rand::random;
 use serde::{Deserialize, Serialize};
 
+use crate::cache::Cache;
 use crate::geometry::HitInfo;
 use crate::primitive::{Ray3, Vec3Utils};
+use crate::texture::Texture;
 
 use super::Interaction;
 
 #[derive(Serialize, Deserialize)]
 pub struct Dielectric {
     pub ref_idx: f32,
+    pub normal_map_idx: Option<usize>,
 }
 
 impl Dielectric {
-    pub fn interact(&self, ray: &Ray3, hit: &HitInfo) -> Interaction {
+    pub fn interact(
+        &self,
+        texture_cache: &Cache<Texture>,
+        ray: &Ray3,
+        hit: &HitInfo,
+    ) -> Interaction {
+        let normal = self
+            .normal_map_idx
+            .map(|idx| texture_cache[idx].normal(hit.u, hit.v, hit.tbn.matrix()))
+            .unwrap_or(hit.tbn.n);
+
         let outward_normal;
         let ni_by_nt;
         let cos;
 
-        if ray.dir.dot(hit.normal) > 0.0 {
-            outward_normal = -hit.normal;
+        if ray.dir.dot(normal) > 0.0 {
+            outward_normal = -normal;
             ni_by_nt = self.ref_idx;
-            cos = self.ref_idx * ray.dir.normalize().dot(hit.normal);
+            cos = self.ref_idx * ray.dir.normalize().dot(normal);
         } else {
-            outward_normal = hit.normal;
+            outward_normal = normal;
             ni_by_nt = 1.0 / self.ref_idx;
-            cos = -ray.dir.normalize().dot(hit.normal);
+            cos = -ray.dir.normalize().dot(normal);
         }
 
         if let Some(refraction_dir) = ray.dir.refract(outward_normal, ni_by_nt) {
@@ -39,7 +52,7 @@ impl Dielectric {
             }
         }
 
-        let reflection_dir = ray.dir.reflect(hit.normal);
+        let reflection_dir = ray.dir.reflect(normal);
 
         Interaction::NonTerminal {
             ray: Ray3::new(hit.pos, reflection_dir),

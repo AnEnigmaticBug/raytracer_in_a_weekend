@@ -37,7 +37,7 @@ impl Material {
         hit: &HitInfo,
     ) -> Interaction {
         match self {
-            Material::Dielectric(mat) => mat.interact(ray, hit),
+            Material::Dielectric(mat) => mat.interact(texture_cache, ray, hit),
             Material::Lambertian(mat) => mat.interact(texture_cache, hit),
             Material::Light(mat) => mat.interact(texture_cache, hit),
             Material::Metal(mat) => mat.interact(texture_cache, ray, hit),

@@ -115,6 +115,7 @@ fn setup_scene(scene_seed: u64, aspect: f32) -> Scene {
                         color: Vec3::splat(0.5),
                     }),
                 ),
+                normal_map_idx: None,
             }),
         ),
     });
@@ -139,6 +140,7 @@ fn setup_scene(scene_seed: u64, aspect: f32) -> Scene {
                             ),
                         }),
                     ),
+                    normal_map_idx: None,
                 })
             } else if material_chooser < 0.95 {
                 Material::Metal(Metal {
@@ -152,10 +154,14 @@ fn setup_scene(scene_seed: u64, aspect: f32) -> Scene {
                             ),
                         }),
                     ),
+                    normal_map_idx: None,
                     fuzz: 0.5 * rng.gen::<f32>(),
                 })
             } else {
-                Material::Dielectric(Dielectric { ref_idx: 1.5 })
+                Material::Dielectric(Dielectric {
+                    ref_idx: 1.5,
+                    normal_map_idx: None,
+                })
             };
 
             scene.items.push(Item {
@@ -190,6 +196,7 @@ fn setup_scene(scene_seed: u64, aspect: f32) -> Scene {
                         color: Vec3::new(0.4, 0.2, 0.1),
                     }),
                 ),
+                normal_map_idx: None,
             }),
         ),
     });
@@ -204,7 +211,10 @@ fn setup_scene(scene_seed: u64, aspect: f32) -> Scene {
         ),
         material_idx: scene.material_cache.add(
             "glass_main",
-            Material::Dielectric(Dielectric { ref_idx: 1.5 }),
+            Material::Dielectric(Dielectric {
+                ref_idx: 1.5,
+                normal_map_idx: None,
+            }),
         ),
     });
 
@@ -225,6 +235,7 @@ fn setup_scene(scene_seed: u64, aspect: f32) -> Scene {
                         color: Vec3::new(0.7, 0.6, 0.5),
                     }),
                 ),
+                normal_map_idx: None,
                 fuzz: 0.0,
             }),
         ),
