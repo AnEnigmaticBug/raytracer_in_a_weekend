@@ -1,4 +1,5 @@
 mod bvh;
+pub mod cache;
 pub mod camera;
 pub mod geometry;
 pub mod item;

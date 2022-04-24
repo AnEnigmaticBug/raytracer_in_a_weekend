@@ -3,6 +3,7 @@ use glam::Vec3;
 use rand::{thread_rng, Rng, SeedableRng};
 use rand_xoshiro::Xoshiro256PlusPlus;
 use raytracer::{
+    cache::Cache,
     camera::CameraInitOptions,
     geometry::{Geometry, Sphere},
     item::Item,
@@ -36,25 +37,51 @@ fn main() {
 }
 
 fn setup_scene(scene_seed: u64, aspect: f32) -> Scene {
+    let mut texture_cache = Cache::new();
+
     let mut scene = Scene {
         sky_box: SkyBox {
-            up: Texture::Image(
-                Image::load("inputs/textures/yellowcloud_up.png").expect("Couldn't load texture"),
+            up_idx: texture_cache.add(
+                "skybox_up",
+                Texture::Image(
+                    Image::load("inputs/textures/yellowcloud_up.png")
+                        .expect("Couldn't load texture"),
+                ),
             ),
-            dn: Texture::Image(
-                Image::load("inputs/textures/yellowcloud_dn.png").expect("Couldn't load texture"),
+            dn_idx: texture_cache.add(
+                "skybox_dn",
+                Texture::Image(
+                    Image::load("inputs/textures/yellowcloud_dn.png")
+                        .expect("Couldn't load texture"),
+                ),
             ),
-            lf: Texture::Image(
-                Image::load("inputs/textures/yellowcloud_lf.png").expect("Couldn't load texture"),
+            lf_idx: texture_cache.add(
+                "skybox_lf",
+                Texture::Image(
+                    Image::load("inputs/textures/yellowcloud_lf.png")
+                        .expect("Couldn't load texture"),
+                ),
             ),
-            rt: Texture::Image(
-                Image::load("inputs/textures/yellowcloud_rt.png").expect("Couldn't load texture"),
+            rt_idx: texture_cache.add(
+                "skybox_rt",
+                Texture::Image(
+                    Image::load("inputs/textures/yellowcloud_rt.png")
+                        .expect("Couldn't load texture"),
+                ),
             ),
-            ft: Texture::Image(
-                Image::load("inputs/textures/yellowcloud_ft.png").expect("Couldn't load texture"),
+            ft_idx: texture_cache.add(
+                "skybox_ft",
+                Texture::Image(
+                    Image::load("inputs/textures/yellowcloud_ft.png")
+                        .expect("Couldn't load texture"),
+                ),
             ),
-            bk: Texture::Image(
-                Image::load("inputs/textures/yellowcloud_bk.png").expect("Couldn't load texture"),
+            bk_idx: texture_cache.add(
+                "skybox_bk",
+                Texture::Image(
+                    Image::load("inputs/textures/yellowcloud_bk.png")
+                        .expect("Couldn't load texture"),
+                ),
             ),
         },
         camera: CameraInitOptions {
@@ -65,19 +92,31 @@ fn setup_scene(scene_seed: u64, aspect: f32) -> Scene {
             aspect,
         }
         .into(),
+        texture_cache,
+        geometry_cache: Cache::new(),
+        material_cache: Cache::new(),
         items: Vec::with_capacity(1 + 12 * 12 + 3),
     };
 
     scene.items.push(Item {
-        geometry: Geometry::Sphere(Sphere {
-            center: Vec3::new(0.0, -1000.0, 0.0),
-            radius: 1000.0,
-        }),
-        material: Material::Lambertian(Lambertian {
-            texture: Texture::Solid(Solid {
-                color: Vec3::splat(0.5),
+        geometry_idx: scene.geometry_cache.add(
+            "ground",
+            Geometry::Sphere(Sphere {
+                center: Vec3::new(0.0, -1000.0, 0.0),
+                radius: 1000.0,
             }),
-        }),
+        ),
+        material_idx: scene.material_cache.add(
+            "ground",
+            Material::Lambertian(Lambertian {
+                texture_idx: scene.texture_cache.add(
+                    "gray",
+                    Texture::Solid(Solid {
+                        color: Vec3::splat(0.5),
+                    }),
+                ),
+            }),
+        ),
     });
 
     let mut rng = Xoshiro256PlusPlus::seed_from_u64(scene_seed);
@@ -90,23 +129,29 @@ fn setup_scene(scene_seed: u64, aspect: f32) -> Scene {
             let material_chooser = rng.gen::<f32>();
             let material = if material_chooser < 0.8 {
                 Material::Lambertian(Lambertian {
-                    texture: Texture::Solid(Solid {
-                        color: Vec3::new(
-                            rng.gen::<f32>() * rng.gen::<f32>(),
-                            rng.gen::<f32>() * rng.gen::<f32>(),
-                            rng.gen::<f32>() * rng.gen::<f32>(),
-                        ),
-                    }),
+                    texture_idx: scene.texture_cache.add(
+                        format!("rand_tex_{}_{}", a, b),
+                        Texture::Solid(Solid {
+                            color: Vec3::new(
+                                rng.gen::<f32>() * rng.gen::<f32>(),
+                                rng.gen::<f32>() * rng.gen::<f32>(),
+                                rng.gen::<f32>() * rng.gen::<f32>(),
+                            ),
+                        }),
+                    ),
                 })
             } else if material_chooser < 0.95 {
                 Material::Metal(Metal {
-                    texture: Texture::Solid(Solid {
-                        color: Vec3::new(
-                            0.5 * (rng.gen::<f32>() + 1.0),
-                            0.5 * (rng.gen::<f32>() + 1.0),
-                            0.5 * (rng.gen::<f32>() + 1.0),
-                        ),
-                    }),
+                    texture_idx: scene.texture_cache.add(
+                        format!("rand_tex_{}_{}", a, b),
+                        Texture::Solid(Solid {
+                            color: Vec3::new(
+                                0.5 * (rng.gen::<f32>() + 1.0),
+                                0.5 * (rng.gen::<f32>() + 1.0),
+                                0.5 * (rng.gen::<f32>() + 1.0),
+                            ),
+                        }),
+                    ),
                     fuzz: 0.5 * rng.gen::<f32>(),
                 })
             } else {
@@ -114,46 +159,75 @@ fn setup_scene(scene_seed: u64, aspect: f32) -> Scene {
             };
 
             scene.items.push(Item {
-                geometry: Geometry::Sphere(Sphere {
-                    center,
-                    radius: 0.2,
-                }),
-                material,
+                geometry_idx: scene.geometry_cache.add(
+                    format!("rand_geo_{}_{}", a, b),
+                    Geometry::Sphere(Sphere {
+                        center,
+                        radius: 0.2,
+                    }),
+                ),
+                material_idx: scene
+                    .material_cache
+                    .add(format!("rand_mat_{}_{}", a, b), material),
             });
         }
     }
 
     scene.items.push(Item {
-        geometry: Geometry::Sphere(Sphere {
-            center: Vec3::new(-1.0, 1.0, -1.5),
-            radius: 1.0,
-        }),
-        material: Material::Lambertian(Lambertian {
-            texture: Texture::Solid(Solid {
-                color: Vec3::new(0.4, 0.2, 0.1),
+        geometry_idx: scene.geometry_cache.add(
+            "lambertian_main",
+            Geometry::Sphere(Sphere {
+                center: Vec3::new(-1.0, 1.0, -1.5),
+                radius: 1.0,
             }),
-        }),
+        ),
+        material_idx: scene.material_cache.add(
+            "lambertian_main",
+            Material::Lambertian(Lambertian {
+                texture_idx: scene.texture_cache.add(
+                    "lambertian_main",
+                    Texture::Solid(Solid {
+                        color: Vec3::new(0.4, 0.2, 0.1),
+                    }),
+                ),
+            }),
+        ),
     });
 
     scene.items.push(Item {
-        geometry: Geometry::Sphere(Sphere {
-            center: Vec3::new(0.0, 1.0, 0.0),
-            radius: 1.0,
-        }),
-        material: Material::Dielectric(Dielectric { ref_idx: 1.5 }),
+        geometry_idx: scene.geometry_cache.add(
+            "glass_main",
+            Geometry::Sphere(Sphere {
+                center: Vec3::new(0.0, 1.0, 0.0),
+                radius: 1.0,
+            }),
+        ),
+        material_idx: scene.material_cache.add(
+            "glass_main",
+            Material::Dielectric(Dielectric { ref_idx: 1.5 }),
+        ),
     });
 
     scene.items.push(Item {
-        geometry: Geometry::Sphere(Sphere {
-            center: Vec3::new(1.0, 1.0, 1.5),
-            radius: 1.0,
-        }),
-        material: Material::Metal(Metal {
-            texture: Texture::Solid(Solid {
-                color: Vec3::new(0.7, 0.6, 0.5),
+        geometry_idx: scene.geometry_cache.add(
+            "metal_main",
+            Geometry::Sphere(Sphere {
+                center: Vec3::new(1.0, 1.0, 1.5),
+                radius: 1.0,
             }),
-            fuzz: 0.0,
-        }),
+        ),
+        material_idx: scene.material_cache.add(
+            "metal_main",
+            Material::Metal(Metal {
+                texture_idx: scene.texture_cache.add(
+                    "metal_main",
+                    Texture::Solid(Solid {
+                        color: Vec3::new(0.7, 0.6, 0.5),
+                    }),
+                ),
+                fuzz: 0.0,
+            }),
+        ),
     });
 
     scene

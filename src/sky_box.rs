@@ -3,17 +3,18 @@ use std::f32::consts::FRAC_PI_4;
 use glam::Vec3;
 use serde::{Deserialize, Serialize};
 
-use crate::texture::{Solid, Texture};
+use crate::cache::Cache;
+use crate::texture::Texture;
 use crate::util::map;
 
 #[derive(Serialize, Deserialize)]
 pub struct SkyBox {
-    pub up: Texture,
-    pub dn: Texture,
-    pub lf: Texture,
-    pub rt: Texture,
-    pub ft: Texture,
-    pub bk: Texture,
+    pub up_idx: usize,
+    pub dn_idx: usize,
+    pub lf_idx: usize,
+    pub rt_idx: usize,
+    pub ft_idx: usize,
+    pub bk_idx: usize,
 }
 
 enum Dir {
@@ -43,30 +44,30 @@ impl Dir {
 }
 
 impl SkyBox {
-    pub fn solid(color: Vec3) -> Self {
+    pub fn all(tex_idx: usize) -> Self {
         SkyBox {
-            up: Texture::Solid(Solid { color }),
-            dn: Texture::Solid(Solid { color }),
-            lf: Texture::Solid(Solid { color }),
-            rt: Texture::Solid(Solid { color }),
-            ft: Texture::Solid(Solid { color }),
-            bk: Texture::Solid(Solid { color }),
+            up_idx: tex_idx,
+            dn_idx: tex_idx,
+            lf_idx: tex_idx,
+            rt_idx: tex_idx,
+            ft_idx: tex_idx,
+            bk_idx: tex_idx,
         }
     }
 
-    pub fn color(&self, dir: Vec3) -> Vec3 {
+    pub fn color(&self, texture_cache: &Cache<Texture>, dir: Vec3) -> Vec3 {
         let (x, y, z) = (dir.x, dir.y, dir.z);
         let dir = dir_of_max_abs_val(x, y, z);
-        let tex = match dir {
-            Dir::Up => &self.up,
-            Dir::Dn => &self.dn,
-            Dir::Lf => &self.lf,
-            Dir::Rt => &self.rt,
-            Dir::Ft => &self.ft,
-            Dir::Bk => &self.bk,
+        let tex_idx = match dir {
+            Dir::Up => self.up_idx,
+            Dir::Dn => self.dn_idx,
+            Dir::Lf => self.lf_idx,
+            Dir::Rt => self.rt_idx,
+            Dir::Ft => self.ft_idx,
+            Dir::Bk => self.bk_idx,
         };
         let (u, v) = dir.uv(x, y, z);
-        tex.color(u, v)
+        texture_cache[tex_idx].color(u, v)
     }
 }
 

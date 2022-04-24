@@ -4,8 +4,10 @@ mod light;
 mod metal;
 mod util;
 
+use crate::cache::Cache;
 use crate::geometry::HitInfo;
 use crate::primitive::Ray3;
+use crate::texture::Texture;
 
 pub use dielectric::Dielectric;
 use glam::Vec3;
@@ -28,12 +30,17 @@ pub enum Interaction {
 }
 
 impl Material {
-    pub fn interact(&self, ray: &Ray3, hit: &HitInfo) -> Interaction {
+    pub fn interact(
+        &self,
+        texture_cache: &Cache<Texture>,
+        ray: &Ray3,
+        hit: &HitInfo,
+    ) -> Interaction {
         match self {
             Material::Dielectric(mat) => mat.interact(ray, hit),
-            Material::Lambertian(mat) => mat.interact(hit),
-            Material::Light(mat) => mat.interact(hit),
-            Material::Metal(mat) => mat.interact(ray, hit),
+            Material::Lambertian(mat) => mat.interact(texture_cache, hit),
+            Material::Light(mat) => mat.interact(texture_cache, hit),
+            Material::Metal(mat) => mat.interact(texture_cache, ray, hit),
         }
     }
 }

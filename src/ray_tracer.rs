@@ -7,10 +7,9 @@ use indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle};
 use rand::Rng;
 use rayon::prelude::*;
 
-use crate::item::HitInfoAndMaterial;
 use crate::material::Interaction;
 use crate::primitive::Ray3;
-use crate::scene::Scene;
+use crate::scene::{HitInfoAndMaterial, Scene};
 use crate::tone_mapper::ToneMapper;
 
 #[derive(Args)]
@@ -98,14 +97,14 @@ impl RayTracer {
         }
 
         if let Some(HitInfoAndMaterial(hit_info, material)) = scene.hit(ray, 0.001, f32::MAX) {
-            match material.interact(ray, &hit_info) {
+            match material.interact(&scene.texture_cache, ray, &hit_info) {
                 Interaction::NonTerminal { ray, attenuation } => {
                     self.color_ray(&ray, scene, depth + 1) * attenuation
                 }
                 Interaction::Terminal { color } => color,
             }
         } else {
-            scene.sky_box.color(ray.dir)
+            scene.sky_box.color(&scene.texture_cache, ray.dir)
         }
     }
 }
