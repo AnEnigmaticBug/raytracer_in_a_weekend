@@ -8,7 +8,7 @@ use crate::texture::Texture;
 use crate::util::map;
 
 #[derive(Serialize, Deserialize)]
-pub struct SkyBox {
+pub struct Cubemap {
     pub up_idx: usize,
     pub dn_idx: usize,
     pub lf_idx: usize,
@@ -43,9 +43,9 @@ impl Dir {
     }
 }
 
-impl SkyBox {
+impl Cubemap {
     pub fn all(tex_idx: usize) -> Self {
-        SkyBox {
+        Cubemap {
             up_idx: tex_idx,
             dn_idx: tex_idx,
             lf_idx: tex_idx,

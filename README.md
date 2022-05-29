@@ -16,6 +16,7 @@ These things weren't covered in _Ray Tracing in One Weekend_ but I added them an
 * Planes
 * Light emitting materials
 * Textures: images (PNG and JPEG) and linear gradients
+* SkyBoxes: both cubemaps and equirectangular images
 * Normal mapping
 * Tone-mapping
 * Scene serialization/deserialization via JSON files

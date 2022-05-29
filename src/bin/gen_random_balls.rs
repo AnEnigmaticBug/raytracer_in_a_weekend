@@ -9,7 +9,7 @@ use raytracer::{
     item::Item,
     material::{Dielectric, Lambertian, Material, Metal},
     scene::Scene,
-    sky_box::SkyBox,
+    sky_box::{Cubemap, SkyBox},
     texture::{Image, Solid, Texture},
 };
 
@@ -40,7 +40,7 @@ fn setup_scene(scene_seed: u64, aspect: f32) -> Scene {
     let mut texture_cache = Cache::new();
 
     let mut scene = Scene {
-        sky_box: SkyBox {
+        sky_box: SkyBox::Cubemap(Cubemap {
             up_idx: texture_cache.add(
                 "skybox_up",
                 Texture::Image(
@@ -83,7 +83,7 @@ fn setup_scene(scene_seed: u64, aspect: f32) -> Scene {
                         .expect("Couldn't load texture"),
                 ),
             ),
-        },
+        }),
         camera: CameraInitOptions {
             pos: Vec3::new(3.0, 1.5, 8.0),
             look_at: Vec3::new(0.5, 0.0, -1.0),
